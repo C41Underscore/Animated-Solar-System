@@ -2,7 +2,9 @@
 #define VIEWWIDGET_H
 
 #include <QGLWidget>
+#include <QTimer>
 #include <GL/glu.h>
+#include <math.h>
 
 
 class ViewWidget : public QGLWidget
@@ -16,7 +18,8 @@ protected:
     void paintGL();
 
 private:
-    void planet();
+
+    void planet(double r, int lats, int longs);
 };
 
 #endif // VIEWWIDGET_H
