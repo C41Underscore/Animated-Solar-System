@@ -5,6 +5,7 @@
 #include <QTimer>
 #include <GL/glu.h>
 #include <math.h>
+#include "solarsystem.h"
 
 
 class ViewWidget : public QGLWidget
@@ -18,7 +19,7 @@ protected:
     void paintGL();
 
 private:
-
+    SolarSystem model;
     void planet(double r, int lats, int longs);
 };
 

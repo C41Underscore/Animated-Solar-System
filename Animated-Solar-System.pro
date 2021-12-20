@@ -12,9 +12,11 @@ LIBS += -L/usr/local/lib -lGLU
 SOURCES += \
     main.cpp \
     mainwindow.cpp \
+    solarsystem.cpp \
     viewwidget.cpp
 
 HEADERS += \
     mainwindow.h \
+    solarsystem.h \
     viewwidget.h
 

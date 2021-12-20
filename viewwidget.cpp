@@ -1,5 +1,9 @@
 #include "viewwidget.h"
 
+#include <QDebug>
+
+#define MODEL_SIZE 20.
+
 typedef struct materialStruct {
   GLfloat ambient[4];
   GLfloat diffuse[4];
@@ -17,7 +21,16 @@ static materialStruct brassMaterials = {
 
 ViewWidget::ViewWidget(QWidget* parent) : QGLWidget(parent)
 {
-
+    this->model = SolarSystem("Sol", 696340.);
+    this->model.addPlanet("Mercury", 88., 2439.7, 57910000.);
+    this->model.addPlanet("Venus", 225., 6051.8, 108200000.);
+    this->model.addPlanet("Earth", 365., 6371., 149600000.);
+    this->model.addPlanet("Mars", 687., 3389.5, 227900000.);
+//    this->model.addPlanet("Jupiter", (float)12*365, 69911., 778000000.);
+//    this->model.addPlanet("Saturn", (float)29*365, 58232., 1434000000.);
+//    this->model.addPlanet("Uranus", (float)84*365, 25362., 2871000000.);
+//    this->model.addPlanet("Neptune", (float)165*365, 24622., 4495000000.);
+    this->model.normalise(MODEL_SIZE);
 }
 
 void ViewWidget::initializeGL()
@@ -27,7 +40,7 @@ void ViewWidget::initializeGL()
     glEnable(GL_LIGHT0);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    glOrtho(-4., 4., -4., 4., -4., 4.);
+    glOrtho(-MODEL_SIZE, MODEL_SIZE, -MODEL_SIZE, MODEL_SIZE, -MODEL_SIZE, MODEL_SIZE);
     glMatrixMode(GL_MODELVIEW);
 
     QTimer* timer = new QTimer(this);
@@ -72,49 +85,33 @@ void ViewWidget::planet(double r, int lats, int longs)
 void ViewWidget::resizeGL(int w, int h)
 {
     glViewport(0, 0, w, h);
-
-//    glMatrixMode(GL_MODELVIEW);
-//    glLoadIdentity();
-
-//    glEnable(GL_LIGHTING);
-//    glEnable(GL_LIGHT0);
-//    GLfloat light_pos[] = {0., 0., 10., 1.};
-//    glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
-//    glLightf (GL_LIGHT0, GL_SPOT_CUTOFF,15.);
-
-//    glMatrixMode(GL_PROJECTION);
-//    glLoadIdentity();
-//    glOrtho(-4.0, 4.0, -4.0, 4.0, -4.0, 4.0);
 }
 
 void ViewWidget::paintGL()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glMatrixMode(GL_MODELVIEW);
     glEnable(GL_DEPTH_TEST);
     glLoadIdentity();
-    GLfloat light_pos[] = {15., 0., 0., 1.};
+    gluLookAt(1.,1.,1., 0., 0.,0., 0.,1.,0.);
+
+    GLfloat light_pos[] = {0., 10., 0., 1.};
     glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
-//    glLightf (GL_LIGHT0, GL_SPOT_CUTOFF,15.);
 
-    glPopMatrix();
+    this->model.tick(1.);
+    std::vector<Planet> planets = this->model.getPlanets();
 
-//    glTranslatef(0.5, 0., 0.);
+    this->planet(3, 20, 20);
 
-    this->planet(1., 20, 20);
-
-    glPushMatrix();
-
-    glTranslatef(4., 0., 0.);
-
-    this->planet(0.3, 20, 20);
-
-    glPopMatrix();
-
-    glRotatef(1., 0., 1., 0.);
-
-    glPushMatrix();
-
-    gluLookAt(0.,0.,0., 0.0, 0.0,0.0, 1.0,0.0,0.0);
+    for(unsigned int i = 0; i < planets.size(); i++)
+    {
+//        qDebug() << planets.at(i).getPosition();
+        glPushMatrix();
+        glRotatef(planets.at(i).getPosition(), 0., 1., 0.);
+        glTranslatef(planets.at(i).getDistanceFromSun(), 0., 0.);
+        this->planet(planets.at(i).getRadius(), 20, 20);
+        glPopMatrix();
+    }
 
     glFlush();
 }
