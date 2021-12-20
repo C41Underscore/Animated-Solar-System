@@ -41,6 +41,7 @@ public:
     void tick(float speed); // an Earth day
     std::vector<Planet> getPlanets();
     void normalise(float scalar);
+    Planet getStar();
 
 private:
     std::vector<Planet> planets;

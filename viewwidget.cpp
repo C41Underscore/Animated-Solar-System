@@ -26,11 +26,18 @@ ViewWidget::ViewWidget(QWidget* parent) : QGLWidget(parent)
     this->model.addPlanet("Venus", 225., 6051.8, 108200000.);
     this->model.addPlanet("Earth", 365., 6371., 149600000.);
     this->model.addPlanet("Mars", 687., 3389.5, 227900000.);
-//    this->model.addPlanet("Jupiter", (float)12*365, 69911., 778000000.);
-//    this->model.addPlanet("Saturn", (float)29*365, 58232., 1434000000.);
-//    this->model.addPlanet("Uranus", (float)84*365, 25362., 2871000000.);
-//    this->model.addPlanet("Neptune", (float)165*365, 24622., 4495000000.);
+    this->model.addPlanet("Jupiter", (float)12*365, 69911., 778000000.);
+    this->model.addPlanet("Saturn", (float)29*365, 58232., 1434000000.);
+    this->model.addPlanet("Uranus", (float)84*365, 25362., 2871000000.);
+    this->model.addPlanet("Neptune", (float)165*365, 24622., 4495000000.);
     this->model.normalise(MODEL_SIZE);
+    this->speed = 1.;
+}
+
+void ViewWidget::updateSpeed(int newSpeed)
+{
+    this->speed = (float)newSpeed/10.;
+    update();
 }
 
 void ViewWidget::initializeGL()
@@ -98,17 +105,17 @@ void ViewWidget::paintGL()
     GLfloat light_pos[] = {0., 10., 0., 1.};
     glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
 
-    this->model.tick(1.);
+    this->model.tick(this->speed);
     std::vector<Planet> planets = this->model.getPlanets();
 
-    this->planet(3, 20, 20);
+    this->planet(3., 20, 20);
 
     for(unsigned int i = 0; i < planets.size(); i++)
     {
 //        qDebug() << planets.at(i).getPosition();
         glPushMatrix();
         glRotatef(planets.at(i).getPosition(), 0., 1., 0.);
-        glTranslatef(planets.at(i).getDistanceFromSun(), 0., 0.);
+        glTranslatef(planets.at(i).getDistanceFromSun() + 3., 0., 0.);
         this->planet(planets.at(i).getRadius(), 20, 20);
         glPopMatrix();
     }

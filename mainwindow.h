@@ -2,7 +2,8 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QVBoxLayout>
+#include <QBoxLayout>
+#include <QSlider>
 
 #include "viewwidget.h"
 
@@ -16,6 +17,7 @@ public:
 
 private:
     ViewWidget* viewPort;
-    QVBoxLayout* layout;
+    QSlider* speedControl;
+    QBoxLayout* layout;
 };
 #endif // MAINWINDOW_H

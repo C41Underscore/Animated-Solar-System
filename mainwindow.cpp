@@ -3,13 +3,25 @@
 MainWindow::MainWindow(QWidget *parent)
     : QWidget(parent)
 {
-    ViewWidget* viewPort = new ViewWidget(this);
-    QVBoxLayout* layout = new QVBoxLayout(this);
+    layout = new QBoxLayout(QBoxLayout::TopToBottom, this);
+
+    viewPort = new ViewWidget(this);
+
+    speedControl = new QSlider(Qt::Horizontal);
+    speedControl->setMaximum(100);
+    speedControl->setMinimum(0);
+    speedControl->setSingleStep(1);
+    speedControl->setSliderPosition(1);
+    connect(speedControl, SIGNAL(valueChanged(int)), viewPort, SLOT(updateSpeed(int)));
+
     layout->addWidget(viewPort);
+    layout->addWidget(speedControl);
+
 }
 
 MainWindow::~MainWindow()
 {
     delete viewPort;
+    delete speedControl;
     delete layout;
 }

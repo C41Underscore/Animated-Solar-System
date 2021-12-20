@@ -49,9 +49,17 @@ void SolarSystem::normalise(float scalar)
     }
     for(unsigned int i = 0; i < this->planets.size(); i++)
     {
-        this->planets.at(i).setRadius(this->planets.at(i).getRadius()/highest_radius);
-        this->planets.at(i).setDistanceFromSun((this->planets.at(i).getDistanceFromSun()/highest_distance)*scalar);
+        float newRadius = this->planets.at(i).getRadius()/highest_radius;
+        float newDistance = (this->planets.at(i).getDistanceFromSun()/highest_distance)*scalar + this->star->getRadius()/highest_distance;
+        this->planets.at(i).setRadius(newRadius);
+        this->planets.at(i).setDistanceFromSun(newDistance);
     }
+
+}
+
+Planet SolarSystem::getStar()
+{
+    return *this->star;
 }
 
 SolarSystem::~SolarSystem()
