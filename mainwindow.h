@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QBoxLayout>
 #include <QSlider>
+#include <QComboBox>
 
 #include "viewwidget.h"
 
@@ -18,6 +19,7 @@ public:
 private:
     ViewWidget* viewPort;
     QSlider* speedControl;
+    QComboBox* sizeControl;
     QBoxLayout* layout;
 };
 #endif // MAINWINDOW_H

@@ -40,7 +40,7 @@ public:
     void addPlanet(std::string name, float orbitPeriod, float radius, float distanceFromSun);
     void tick(float speed); // an Earth day
     std::vector<Planet> getPlanets();
-    void normalise(float scalar);
+    void normalise(float scalar, std::string specifiedPlanet = "");
     Planet getStar();
 
 private:

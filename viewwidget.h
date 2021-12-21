@@ -23,10 +23,12 @@ protected:
 private:
     SolarSystem model;
     float speed;
+    float lightPosition;
     void planet(double r, int lats, int longs);
 
 public slots:
     void updateSpeed(int newSpeed);
+    void updateSizes(const QString& objectName);
 };
 
 #endif // VIEWWIDGET_H

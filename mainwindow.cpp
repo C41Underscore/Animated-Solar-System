@@ -14,9 +14,15 @@ MainWindow::MainWindow(QWidget *parent)
     speedControl->setSliderPosition(1);
     connect(speedControl, SIGNAL(valueChanged(int)), viewPort, SLOT(updateSpeed(int)));
 
+    sizeControl = new QComboBox();
+    sizeControl->addItems({"Standard", "The Sun", "Mercury", "Venus", "Earth", "Mars", "Jupiter", "Saturn", "Uranus", "Neptune"});
+    sizeControl->setCurrentIndex(0);
+    connect(sizeControl, SIGNAL(currentTextChanged(const QString&)), viewPort, SLOT(updateSizes(const QString&)));
+
+
     layout->addWidget(viewPort);
     layout->addWidget(speedControl);
-
+    layout->addWidget(sizeControl);
 }
 
 MainWindow::~MainWindow()

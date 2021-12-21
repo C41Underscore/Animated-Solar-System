@@ -32,11 +32,18 @@ ViewWidget::ViewWidget(QWidget* parent) : QGLWidget(parent)
     this->model.addPlanet("Neptune", (float)165*365, 24622., 4495000000.);
     this->model.normalise(MODEL_SIZE);
     this->speed = 1.;
+    this->lightPosition = 100.;
 }
 
 void ViewWidget::updateSpeed(int newSpeed)
 {
     this->speed = (float)newSpeed/10.;
+    update();
+}
+
+void ViewWidget::updateSizes(const QString& objectName)
+{
+    this->model.normalise(MODEL_SIZE, objectName.toStdString());
     update();
 }
 
@@ -96,6 +103,7 @@ void ViewWidget::resizeGL(int w, int h)
 
 void ViewWidget::paintGL()
 {
+    float sun_size = 3.;
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glMatrixMode(GL_MODELVIEW);
     glEnable(GL_DEPTH_TEST);
@@ -103,19 +111,24 @@ void ViewWidget::paintGL()
     gluLookAt(1.,1.,1., 0., 0.,0., 0.,1.,0.);
 
     GLfloat light_pos[] = {0., 10., 0., 1.};
+    this->lightPosition -= 0.5;
+    if(this->lightPosition < -100.)
+    {
+        this->lightPosition = 100.;
+    }
     glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
 
     this->model.tick(this->speed);
     std::vector<Planet> planets = this->model.getPlanets();
 
-    this->planet(3., 20, 20);
+    this->planet(sun_size, 20, 20);
 
     for(unsigned int i = 0; i < planets.size(); i++)
     {
 //        qDebug() << planets.at(i).getPosition();
         glPushMatrix();
         glRotatef(planets.at(i).getPosition(), 0., 1., 0.);
-        glTranslatef(planets.at(i).getDistanceFromSun() + 3., 0., 0.);
+        glTranslatef(planets.at(i).getDistanceFromSun() + sun_size, 0., 0.);
         this->planet(planets.at(i).getRadius(), 20, 20);
         glPopMatrix();
     }
