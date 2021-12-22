@@ -13,9 +13,9 @@ SolarSystem::SolarSystem(std::string starName, float starRadius)
     this->planets = std::vector<Planet>();
 }
 
-void SolarSystem::addPlanet(std::string name, float orbitPeriod, float radius, float distanceFromSun)
+void SolarSystem::addPlanet(Planet newPlanet)
 {
-    Planet newPlanet(name, orbitPeriod, radius, distanceFromSun+this->star->getRadius());
+    newPlanet.setDistanceFromSun(newPlanet.getDistanceFromSun()+this->star->getRadius());
     this->planets.push_back(newPlanet);
 }
 
@@ -91,63 +91,4 @@ Planet SolarSystem::getStar()
 SolarSystem::~SolarSystem()
 {
     delete this->star;
-}
-
-Planet::Planet(std::string name, float orbitPeriod, float radius, float distanceFromSun)
-{
-    this->name = name;
-    this->orbitPeriod = orbitPeriod;
-    this->radius = radius;
-    this->distanceFromSun = distanceFromSun;
-    this->orbitSpeed = 360./this->orbitPeriod;
-    this->position = 0;
-}
-
-void Planet::updatePosition(float speed)
-{
-    this->position += speed*this->orbitSpeed;
-    if(this->position > 360.)
-    {
-        this->position -= 360.;
-    }
-}
-
-std::string Planet::getName()
-{
-    return this->name;
-}
-
-float Planet::getOrbitPeriod()
-{
-    return this->orbitPeriod;
-}
-
-float Planet::getRadius()
-{
-    return this->radius;
-}
-
-float Planet::getDistanceFromSun()
-{
-    return this->distanceFromSun + this->radius;
-}
-
-float Planet::getOrbitSpeed()
-{
-    return this->orbitSpeed;
-}
-
-float Planet::getPosition()
-{
-    return this->position;
-}
-
-void Planet::setRadius(float radius)
-{
-    this->radius = radius;
-}
-
-void Planet::setDistanceFromSun(float distance)
-{
-    this->distanceFromSun = distance;
 }

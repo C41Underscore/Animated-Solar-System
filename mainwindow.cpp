@@ -14,14 +14,22 @@ MainWindow::MainWindow(QWidget *parent)
     speedControl->setSliderPosition(1);
     connect(speedControl, SIGNAL(valueChanged(int)), viewPort, SLOT(updateSpeed(int)));
 
+    sunSizeControl = new QSlider(Qt::Horizontal);
+    sunSizeControl->setMaximum(15);
+    sunSizeControl->setMinimum(3);
+    sunSizeControl->setSingleStep(1);
+    sunSizeControl->setSliderPosition(10);
+    connect(sunSizeControl, SIGNAL(valueChanged(int)), viewPort, SLOT(updateStarSize(int)));
+
     sizeControl = new QComboBox();
-    sizeControl->addItems({"Standard", "The Sun", "Mercury", "Venus", "Earth", "Mars", "Jupiter", "Saturn", "Uranus", "Neptune"});
+    sizeControl->addItems({"The Sun", "Mercury", "Venus", "Earth", "Mars", "Jupiter", "Saturn", "Uranus", "Neptune"});
     sizeControl->setCurrentIndex(0);
     connect(sizeControl, SIGNAL(currentTextChanged(const QString&)), viewPort, SLOT(updateSizes(const QString&)));
 
 
     layout->addWidget(viewPort);
     layout->addWidget(speedControl);
+    layout->addWidget(sunSizeControl);
     layout->addWidget(sizeControl);
 }
 

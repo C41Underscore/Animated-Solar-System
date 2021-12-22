@@ -24,11 +24,14 @@ private:
     SolarSystem model;
     float speed;
     float lightPosition;
-    void planet(double r, int lats, int longs);
+    int starSize;
+    int cameraFocus;
+    void sphere(double r, int lats, int longs);
 
 public slots:
     void updateSpeed(int newSpeed);
     void updateSizes(const QString& objectName);
+    void updateStarSize(int newSize);
 };
 
 #endif // VIEWWIDGET_H

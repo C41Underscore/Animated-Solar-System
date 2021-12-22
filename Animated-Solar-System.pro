@@ -12,11 +12,15 @@ LIBS += -L/usr/local/lib -lGLU
 SOURCES += \
     main.cpp \
     mainwindow.cpp \
+    planet.cpp \
+    satillite.cpp \
     solarsystem.cpp \
     viewwidget.cpp
 
 HEADERS += \
     mainwindow.h \
+    planet.h \
+    satillite.h \
     solarsystem.h \
     viewwidget.h
 

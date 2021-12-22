@@ -19,6 +19,7 @@ public:
 private:
     ViewWidget* viewPort;
     QSlider* speedControl;
+    QSlider* sunSizeControl;
     QComboBox* sizeControl;
     QBoxLayout* layout;
 };

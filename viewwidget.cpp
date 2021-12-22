@@ -2,7 +2,7 @@
 
 #include <QDebug>
 
-#define MODEL_SIZE 20.
+static float MODEL_SIZE = 20.;
 
 typedef struct materialStruct {
   GLfloat ambient[4];
@@ -22,17 +22,22 @@ static materialStruct brassMaterials = {
 ViewWidget::ViewWidget(QWidget* parent) : QGLWidget(parent)
 {
     this->model = SolarSystem("Sol", 696340.);
-    this->model.addPlanet("Mercury", 88., 2439.7, 57910000.);
-    this->model.addPlanet("Venus", 225., 6051.8, 108200000.);
-    this->model.addPlanet("Earth", 365., 6371., 149600000.);
-    this->model.addPlanet("Mars", 687., 3389.5, 227900000.);
-    this->model.addPlanet("Jupiter", (float)12*365, 69911., 778000000.);
-    this->model.addPlanet("Saturn", (float)29*365, 58232., 1434000000.);
-    this->model.addPlanet("Uranus", (float)84*365, 25362., 2871000000.);
-    this->model.addPlanet("Neptune", (float)165*365, 24622., 4495000000.);
+    this->model.addPlanet(Planet("Mercury", 88., 2439.7, 57910000.));
+    this->model.addPlanet(Planet("Venus", 225., 6051.8, 108200000.));
+    Planet earth("Earth", 365., 6371., 149600000.);
+    this->model.addPlanet(earth);
+    this->model.addPlanet(Planet("Mars", 687., 3389.5, 227900000.));
+//    Planet jupiter("Jupiter", (float)12*365, 69911., 778000000.);
+//    jupiter.addSatillite(Satillite(27., 1737.4, 384400., true));
+//    this->model.addPlanet(jupiter);
+//    this->model.addPlanet(Planet("Saturn", (float)29*365, 58232., 1434000000.));
+//    this->model.addPlanet(Planet("Uranus", (float)84*365, 25362., 2871000000.));
+//    this->model.addPlanet(Planet("Neptune", (float)165*365, 24622., 4495000000.));
     this->model.normalise(MODEL_SIZE);
     this->speed = 1.;
-    this->lightPosition = 100.;
+    this->lightPosition = 5.;
+    this->starSize = 10.;
+    this->cameraFocus = 0;
 }
 
 void ViewWidget::updateSpeed(int newSpeed)
@@ -43,9 +48,29 @@ void ViewWidget::updateSpeed(int newSpeed)
 
 void ViewWidget::updateSizes(const QString& objectName)
 {
-    this->model.normalise(MODEL_SIZE, objectName.toStdString());
+//    this->model.normalise(MODEL_SIZE, objectName.toStdString());
+    std::vector<Planet> planets = this->model.getPlanets();
+    int objectPos = 0.;
+    for (unsigned int i = 0; i < planets.size(); i++)
+    {
+        if(planets.at(i).getName().compare(objectName.toStdString()) == 0)
+        {
+            objectPos = i;
+            break;
+        }
+    }
+    this->cameraFocus = objectPos;
+    qDebug() << this->cameraFocus;
     update();
 }
+
+void ViewWidget::updateStarSize(int newSize)
+{
+    this->starSize = newSize;
+    update();
+}
+
+
 
 void ViewWidget::initializeGL()
 {
@@ -53,16 +78,17 @@ void ViewWidget::initializeGL()
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
     glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glOrtho(-MODEL_SIZE, MODEL_SIZE, -MODEL_SIZE, MODEL_SIZE, -MODEL_SIZE, MODEL_SIZE);
+    float betterModelSize = MODEL_SIZE + 1.;
+    glOrtho(-betterModelSize, betterModelSize, -betterModelSize, betterModelSize, -betterModelSize, betterModelSize);
     glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
 
     QTimer* timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(update()));
     timer->start(20);
 }
 
-void ViewWidget::planet(double r, int lats, int longs)
+void ViewWidget::sphere(double r, int lats, int longs)
 {
     materialStruct* p_front = &brassMaterials;
 
@@ -103,35 +129,55 @@ void ViewWidget::resizeGL(int w, int h)
 
 void ViewWidget::paintGL()
 {
-    float sun_size = 3.;
+//    glMatrixMode(GL_PROJECTION);
+//    glOrtho(-MODEL_SIZE, MODEL_SIZE, -MODEL_SIZE, MODEL_SIZE, -MODEL_SIZE, MODEL_SIZE);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glMatrixMode(GL_MODELVIEW);
     glEnable(GL_DEPTH_TEST);
     glLoadIdentity();
-    gluLookAt(1.,1.,1., 0., 0.,0., 0.,1.,0.);
+    std::vector<Planet> planets = this->model.getPlanets();
+    gluLookAt(1., 1., 1., 0., 0., 0., 0., 1., 0.);
 
-    GLfloat light_pos[] = {0., 10., 0., 1.};
-    this->lightPosition -= 0.5;
-    if(this->lightPosition < -100.)
+
+    GLfloat light_pos[] = {100., 0., 0., 1.};
+    this->lightPosition -= 0.01;
+    //glOrtho(-this->lightPosition, this->lightPosition, -this->lightPosition, this->lightPosition, -this->lightPosition, this->lightPosition);
+    if(this->lightPosition < 0.)
     {
-        this->lightPosition = 100.;
+        this->lightPosition = 5.;
     }
     glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
 
-    this->model.tick(this->speed);
-    std::vector<Planet> planets = this->model.getPlanets();
+//    glScalef(this->lightPosition, this->lightPosition, this->lightPosition);
 
-    this->planet(sun_size, 20, 20);
+    this->model.tick(this->speed);
+//    std::vector<Planet> planets = this->model.getPlanets();
+
+    this->sphere(this->starSize, 20, 20);
 
     for(unsigned int i = 0; i < planets.size(); i++)
     {
-//        qDebug() << planets.at(i).getPosition();
         glPushMatrix();
         glRotatef(planets.at(i).getPosition(), 0., 1., 0.);
-        glTranslatef(planets.at(i).getDistanceFromSun() + sun_size, 0., 0.);
-        this->planet(planets.at(i).getRadius(), 20, 20);
+        glTranslatef(planets.at(i).getDistanceFromSun() + this->starSize, 0., 0.);
+        this->sphere(planets.at(i).getRadius(), 20, 20);
         glPopMatrix();
+//        std::vector<Satillite> satillites = planets.at(i).getSatillites();
+//        for(unsigned int j = 0; j < satillites.size(); j++)
+//        {
+//            glPushMatrix();
+//            glRotatef(planets.at(i).getPosition(), 0., 1., 0.);
+//            glTranslatef(planets.at(i).getDistanceFromSun() + this->starSize, 0., 0.);
+//            glRotatef(satillites.at(j).getPosition(), 0., 1., 0.);
+//            glTranslatef(0.1, 0., 0.);
+//            this->sphere(0.05, 20, 20);
+//            glPopMatrix();
+//        }
     }
+//    qDebug() << -planets.at(this->cameraFocus).getDistanceFromSun() << -planets.at(this->cameraFocus).getPosition();
+//    glTranslatef(planets.at(this->cameraFocus).getDistanceFromSun() + this->starSize, 0. ,0.);
+//    glRotatef(-planets.at(this->cameraFocus).getPosition(), 0., 1., 0.);
+//    glTranslatef(-planets.at(this->cameraFocus).getDistanceFromSun() + this->starSize, 0., 0.);
 
     glFlush();
 }
