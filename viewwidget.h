@@ -5,6 +5,7 @@
 #include <QTimer>
 #include <QObject>
 #include <GL/glu.h>
+#include <GL/glut.h>
 #include <math.h>
 #include "solarsystem.h"
 
@@ -27,6 +28,7 @@ private:
     int starSize;
     int cameraFocus;
     void sphere(double r, int lats, int longs);
+    void artificalSatillite(float size);
 
 public slots:
     void updateSpeed(int newSpeed);
