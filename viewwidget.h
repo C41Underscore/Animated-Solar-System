@@ -27,8 +27,10 @@ private:
     float lightPosition;
     int starSize;
     int cameraFocus;
-    void sphere(double r, int lats, int longs);
     void artificalSatillite(float size);
+    void satilliteArm(float size);
+    void satilliteDish(double r, int lats, int longs);
+    void satillitePanel(float size);
 
 public slots:
     void updateSpeed(int newSpeed);

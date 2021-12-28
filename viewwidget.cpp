@@ -4,28 +4,6 @@
 
 static float MODEL_SIZE = 20.;
 
-typedef struct materialStruct {
-  GLfloat ambient[4];
-  GLfloat diffuse[4];
-  GLfloat specular[4];
-  GLfloat shininess;
-} materialStruct;
-
-
-//static materialStruct brassMaterials = {
-//  { 0.33, 0.22, 0.03, 1.0},
-//  { 0.78, 0.57, 0.11, 1.0},);
-//  { 0.99, 0.91, 0.81, 1.0},
-//  27.8
-//};
-
-//static materialStruct sunMaterials = {
-//  { 0.33, 0.22, 0.03, 1.0},
-//  { 1.0, 0.87, 0., 1.0},
-//  { 0.0, 0.0, 0.0, 0.0},
-//  100.0
-//};
-
 ViewWidget::ViewWidget(QWidget* parent) : QGLWidget(parent)
 {
     this->model = SolarSystem("Sol", 696340.);
@@ -43,7 +21,7 @@ ViewWidget::ViewWidget(QWidget* parent) : QGLWidget(parent)
     this->model.normalise(MODEL_SIZE);
     this->speed = 1.;
     this->lightPosition = 5.;
-    this->starSize = 10.;
+    this->starSize = 3.;
     this->cameraFocus = 0;
 }
 
@@ -87,99 +65,144 @@ void ViewWidget::initializeGL()
     glOrtho(-betterModelSize, betterModelSize, -betterModelSize, betterModelSize, -betterModelSize, betterModelSize);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
+    glEnable(GL_NORMALIZE);
 
     QTimer* timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(update()));
     timer->start(20);
 }
 
-void ViewWidget::sphere(double r, int lats, int longs)
+void ViewWidget::satillitePanel(float size)
+{
+    glBegin(GL_POLYGON);
+        glVertex3f(0., 0., 0.);
+        glVertex3f(size*3, 0., 0.);
+        glVertex3f(size*3, 0., size*2);
+        glVertex3f(0., 0., size*2);
+    glEnd();
+}
+
+void ViewWidget::satilliteDish(double r, int lats, int longs)
 {
     int i, j;
-        for(i = 0; i <= lats; i++) {
-            double lat0 = M_PI * (-0.5 + (double) (i - 1) / lats);
-            double z0  = sin(lat0);
-            double zr0 =  cos(lat0);
-
-            double lat1 = M_PI * (-0.5 + (double) i / lats);
-            double z1 = sin(lat1);
-            double zr1 = cos(lat1);
-
-            glBegin(GL_QUAD_STRIP);
-            for(j = 0; j <= longs; j++) {
-                double lng = 2 * M_PI * (double) (j - 1) / longs;
-                double x = cos(lng);
-                double y = sin(lng);
-
-                glNormal3f(x * zr0, y * zr0, z0);
-                glVertex3f(r * x * zr0, r * y * zr0, r * z0);
-                glNormal3f(x * zr1, y * zr1, z1);
-                glVertex3f(r * x * zr1, r * y * zr1, r * z1);
-            }
-            glEnd();
+    int cutOff = longs/2;
+    for(i = 0; i <= lats; i++)
+    {
+        if(i > cutOff)
+        {
+            return;
         }
+        double lat0 = M_PI * (-0.5 + (double) (i - 1) / lats);
+        double z0  = sin(lat0);
+        double zr0 =  cos(lat0);
+
+        double lat1 = M_PI * (-0.5 + (double) i / lats);
+        double z1 = sin(lat1);
+        double zr1 = cos(lat1);
+
+        glBegin(GL_QUAD_STRIP);
+        for(j = 0; j <= longs; j++)
+        {
+            double lng = 2 * M_PI * (double) (j - 1) / longs;
+            double x = cos(lng);
+            double y = sin(lng);
+
+            glNormal3f(x * zr0, y * zr0, z0);
+            glVertex3f(r * x * zr0, r * y * zr0, r * z0);
+            glNormal3f(x * zr1, y * zr1, z1);
+            glVertex3f(r * x * zr1, r * y * zr1, r * z1);
+        }
+        glEnd();
+    }
+}
+
+void ViewWidget::satilliteArm(float size)
+{
+    glBegin(GL_POLYGON);
+        GLUquadric* satilliteDishArm1 = gluNewQuadric();
+        gluCylinder(satilliteDishArm1, size/3, size/3, size, 50, 50);
+        gluDeleteQuadric(satilliteDishArm1);
+    glEnd();
 }
 
 void ViewWidget::artificalSatillite(float size)
 {
+    glRotatef(this->starSize, 0., 1., 0.);
     // create sphere
+    glPushMatrix();
+    GLfloat satillite_body_ambient_and_diffuse[] = {};
+    GLfloat satillite_body_specular[] = {};
+    GLfloat satillite_body_shininess[] = {};
     glBegin(GL_POLYGON);
         GLUquadric* satilliteBody = gluNewQuadric();
-        gluSphere(satilliteBody, 1.0, 20, 20);
+        gluSphere(satilliteBody, size, 20, 20);
         gluDeleteQuadric(satilliteBody);
     glEnd();
+    glPopMatrix();
     // create first cylinders
+    GLfloat satillite_dish_arm_ambient_and_diffuse[] = {};
+    GLfloat satillite_dish_arm_specular[] = {};
+    GLfloat satillite_dish_arm_shininess[] = {};
     // first arm
     glPushMatrix();
-    glBegin(GL_POLYGON);
-        GLUquadric* satilliteDishArm1 = gluNewQuadric();
-        gluCylinder(satilliteDishArm1, 0.1, 0.1, 0.5, 20, 20);
-        gluDeleteQuadric(satilliteDishArm1);
-    glEnd();
+    glTranslatef(0.0, size*2-0.5, 0.0);
+    glRotatef(90., 1., 0., 0.);
+    this->satilliteArm(size);
     glPopMatrix();
     // second arm
     glPushMatrix();
-    glBegin(GL_POLYGON);
-        GLUquadric* satilliteDishArm2 = gluNewQuadric();
-        gluCylinder(satilliteDishArm2, 0.1, 0.1, 0.5, 20, 20);
-        gluDeleteQuadric(satilliteDishArm2);
-    glEnd();
+    glTranslatef(0.0, -size+0.5, 0.0);
+    glRotatef(90., 1., 0., 0.);
+    this->satilliteArm(size);
     glPopMatrix();
-    // create hemispheres
+    // create dishes
+    // create first dish
+    GLfloat satillite_dish_ambient_and_diffuse[] = {};
+    GLfloat satillite_dish_specular[] = {};
+    GLfloat satillite_dish_shininess[] = {};
+    glPushMatrix();
+    glTranslatef(0., size*2, 0.);
+    glRotatef(270., 1., 0., 0.);
+    glTranslatef(0., 0., (2./5.)*size);
+    this->satilliteDish(size/1.5, 20, 20);
+    glPopMatrix();
+    // create second dish
+    glPushMatrix();
+    glTranslatef(0., -size*2, 0.);
+    glRotatef(90., 1., 0., 0.);
+    glTranslatef(0., 0., 2.);
+    this->satilliteDish(size/1.5, 20, 20);
+    glPopMatrix();
     // create second cylinders
+    GLfloat satillite_panel_arm_ambient_and_diffuse[] = {};
+    GLfloat satillite_panel_arm_specular[] = {};
+    GLfloat satillite_panel_arm_shininess[] = {};
     glPushMatrix();
-    glBegin(GL_POLYGON);
-        GLUquadric* satillitePanelArm1 = gluNewQuadric();
-        gluCylinder(satillitePanelArm1, 0.1, 0.1, 0.5, 20, 20);
-        gluDeleteQuadric(satillitePanelArm1);
-    glEnd();
+    glTranslatef(-size*2+0.5, 0.0, 0.0);
+    glRotatef(90., 0., 1.0, 0.);
+    this->satilliteArm(size);
     glPopMatrix();
     // second arm
     glPushMatrix();
-    glBegin(GL_POLYGON);
-        GLUquadric* satillitePanelArm2 = gluNewQuadric();
-        gluCylinder(satillitePanelArm2, 0.1, 0.1, 0.5, 20, 20);
-        gluDeleteQuadric(satillitePanelArm2);
-    glEnd();
+    glTranslatef(size-0.5, 0.0, 0.0);
+    glRotatef(90., 0., 1.0, 0.);
+    this->satilliteArm(size);
     glPopMatrix();
     // create solar panels (rectangles)
+    GLfloat satillite_panel_ambient_and_diffuse[] = {};
+    GLfloat satillite_panel_specular[] = {};
+    GLfloat satillite_panel_shininess[] = {};
+    GLfloat panel_normals[] = {0., 1., 0.};
     // first panel
+    glNormal3f(panel_normals[0], panel_normals[1], panel_normals[2]);
     glPushMatrix();
-    glBegin(GL_POLYGON);
-        glVertex3f(0., 0., 0.);
-        glVertex3f(0., 0., 0.);
-        glVertex3f(0., 0., 0.);
-        glVertex3f(0., 0., 0.);
-    glEnd();
+    glTranslatef(size*2-0.5, 0., -size);
+    this->satillitePanel(size);
     glPopMatrix();
     // second panel
     glPushMatrix();
-    glBegin(GL_POLYGON);
-        glVertex3f(0., 0., 0.);
-        glVertex3f(0., 0., 0.);
-        glVertex3f(0., 0., 0.);
-        glVertex3f(0., 0., 0.);
-    glEnd();
+    glTranslatef(-size*5+0.5, 0., -size);
+    this->satillitePanel(size);
     glPopMatrix();
 }
 
@@ -215,7 +238,7 @@ void ViewWidget::paintGL()
     GLfloat sun_ambient_and_diffuse[] = {1.0, 0.87, 0., 1.0};
     GLfloat sun_emission = 100.0;
     glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, sun_ambient_and_diffuse);
-    glMaterialf(GL_FRONT, GL_EMISSION,   sun_emission);
+    glMaterialf(GL_FRONT, GL_EMISSION, sun_emission);
 
     glBegin(GL_POLYGON);
         GLUquadric* sunQuadric = gluNewQuadric();
@@ -223,21 +246,29 @@ void ViewWidget::paintGL()
         gluDeleteQuadric(sunQuadric);
     glEnd();
 
+
+
     GLfloat planet_ambient_and_diffuse[] = {0.78, 0.57, 0.11, 1.0};
     GLfloat planet_emission = 0.0;
+
+    glMaterialfv(GL_FRONT, GL_AMBIENT, planet_ambient_and_diffuse);
+    glMaterialf(GL_FRONT, GL_EMISSION, planet_emission);
+
+//    this->artificalSatillite(5.);
 
     for(unsigned int i = 0; i < planets.size(); i++)
     {
         glPushMatrix();
         glRotatef(planets.at(i).getPosition(), 0., 1., 0.);
-        glTranslatef(planets.at(i).getDistanceFromSun() + this->starSize, 0., 0.);
+        glTranslatef(planets.at(i).getDistanceFromSun() + 3.0, 0., 0.);
         glMaterialfv(GL_FRONT, GL_AMBIENT, planet_ambient_and_diffuse);
         glMaterialf(GL_FRONT, GL_EMISSION, planet_emission);
-        glBegin(GL_POLYGON);
-            GLUquadric* planetQuadric = gluNewQuadric();
-            gluSphere(planetQuadric, planets.at(i).getRadius(), 16, 16);
-            gluDeleteQuadric(planetQuadric);
-        glEnd();
+        this->artificalSatillite(planets.at(i).getRadius());
+//        glBegin(GL_POLYGON);
+//            GLUquadric* planetQuadric = gluNewQuadric();
+//            gluSphere(planetQuadric, planets.at(i).getRadius(), 16, 16);
+//            gluDeleteQuadric(planetQuadric);
+//        glEnd();
         glPopMatrix();
 //        std::vector<Satillite> satillites = planets.at(i).getSatillites();
 //        for(unsigned int j = 0; j < satillites.size(); j++)
@@ -255,6 +286,6 @@ void ViewWidget::paintGL()
 //    glTranslatef(planets.at(this->cameraFocus).getDistanceFromSun() + this->starSize, 0. ,0.);
 //    glRotatef(-planets.at(this->cameraFocus).getPosition(), 0., 1., 0.);
 //    glTranslatef(-planets.at(this->cameraFocus).getDistanceFromSun() + this->starSize, 0., 0.);
-
+//    glRotatef(this->starSize, 0.0, 1.0, 0.0);
     glFlush();
 }

@@ -16,9 +16,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     sunSizeControl = new QSlider(Qt::Horizontal);
     sunSizeControl->setMaximum(15);
-    sunSizeControl->setMinimum(3);
+    sunSizeControl->setMinimum(3.);
     sunSizeControl->setSingleStep(1);
-    sunSizeControl->setSliderPosition(10);
+    sunSizeControl->setSliderPosition(3.);
     connect(sunSizeControl, SIGNAL(valueChanged(int)), viewPort, SLOT(updateStarSize(int)));
 
     sizeControl = new QComboBox();
