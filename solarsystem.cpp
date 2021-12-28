@@ -74,12 +74,21 @@ void SolarSystem::normalise(float scalar, std::string specifiedPlanet)
             }
         }
     }
+    // THE PROBLEM LIES HERE!!!!!!!!!!!!!!!!!!!!!!!
     for(unsigned int i = 0; i < this->planets.size(); i++)
     {
         float newRadius = this->planets.at(i).getRadius()/highest_radius;
         float newDistance = (this->planets.at(i).getDistanceFromSun()/highest_distance)*scalar;
         this->planets.at(i).setRadius(newRadius);
         this->planets.at(i).setDistanceFromSun(newDistance);
+        std::vector<Satillite>* satillites = this->planets.at(i).getSatillites();
+        for(unsigned int j = 0; j < satillites->size(); j++)
+        {
+            float newSatilliteDistance = satillites->at(j).getDistanceFromPlanet()/this->planets.at(i).getDistanceFromSun();
+            float newSatilliteRadius = satillites->at(j).getRadius()/this->planets.at(i).getRadius();
+            satillites->at(j).setDistanceFromPlanet(newSatilliteDistance);
+            satillites->at(j).setRadius(newSatilliteRadius);
+        }
     }
 }
 

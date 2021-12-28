@@ -13,13 +13,17 @@ private:
     float orbitSpeed;
     float position;
     int texture;
-    bool isMoon;
+    bool moon;
 
 public:
     void updatePosition(float speed);
     float getDistanceFromPlanet();
+    float getRadius();
     float getOrbitSpeed();
     float getPosition();
+    bool isMoon();
+    void setRadius(float radius);
+    void setDistanceFromPlanet(float distance);
 };
 
 #endif // SATILLITE_H

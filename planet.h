@@ -26,12 +26,12 @@ public:
     float getDistanceFromSun();
     float getOrbitSpeed();
     float getPosition();
-    std::vector<Satillite> getSatillites();
+    std::vector<Satillite>* getSatillites();
     void updatePosition(float speed);
     void setRadius(float radius);
     void setDistanceFromSun(float distance);
     void addSatillite(Satillite newSatillite);
-    void updateSatillitePositions();
+    void updateSatillitePositions(float speed);
 };
 
 #endif // PLANET_H

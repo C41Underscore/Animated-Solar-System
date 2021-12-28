@@ -18,14 +18,14 @@ void Planet::updatePosition(float speed)
     {
         this->position -= 360.;
     }
-    updateSatillitePositions();
+    this->updateSatillitePositions(speed);
 }
 
-void Planet::updateSatillitePositions()
+void Planet::updateSatillitePositions(float speed)
 {
     for(unsigned int i = 0; i < this->satillites.size(); i++)
     {
-
+        this->satillites.at(i).updatePosition(speed);
     }
 }
 
@@ -74,7 +74,7 @@ void Planet::addSatillite(Satillite newSatillite)
     this->satillites.push_back(newSatillite);
 }
 
-std::vector<Satillite> Planet::getSatillites()
+std::vector<Satillite>* Planet::getSatillites()
 {
-    return this->satillites;
+    return &this->satillites;
 }

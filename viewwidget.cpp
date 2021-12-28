@@ -10,6 +10,7 @@ ViewWidget::ViewWidget(QWidget* parent) : QGLWidget(parent)
     this->model.addPlanet(Planet("Mercury", 88., 2439.7, 57910000.));
     this->model.addPlanet(Planet("Venus", 225., 6051.8, 108200000.));
     Planet earth("Earth", 365., 6371., 149600000.);
+    earth.addSatillite(Satillite(27., 1737.4, 384400., true));
     this->model.addPlanet(earth);
     this->model.addPlanet(Planet("Mars", 687., 3389.5, 227900000.));
 //    Planet jupiter("Jupiter", (float)12*365, 69911., 778000000.);
@@ -69,7 +70,7 @@ void ViewWidget::initializeGL()
 
     QTimer* timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(update()));
-    timer->start(20);
+    timer->start(50);
 }
 
 void ViewWidget::satillitePanel(float size)
@@ -170,7 +171,7 @@ void ViewWidget::artificalSatillite(float size)
     glPushMatrix();
     glTranslatef(0., -size*2, 0.);
     glRotatef(90., 1., 0., 0.);
-    glTranslatef(0., 0., 2.);
+    glTranslatef(0., 0., (2./5.)*size);
     this->satilliteDish(size/1.5, 20, 20);
     glPopMatrix();
     // create second cylinders
@@ -254,33 +255,44 @@ void ViewWidget::paintGL()
     glMaterialfv(GL_FRONT, GL_AMBIENT, planet_ambient_and_diffuse);
     glMaterialf(GL_FRONT, GL_EMISSION, planet_emission);
 
-//    this->artificalSatillite(5.);
+//    this->artificalSatillite(1.);
 
     for(unsigned int i = 0; i < planets.size(); i++)
     {
         glPushMatrix();
         glRotatef(planets.at(i).getPosition(), 0., 1., 0.);
-        glTranslatef(planets.at(i).getDistanceFromSun() + 3.0, 0., 0.);
+        glTranslatef(planets.at(i).getDistanceFromSun() + this->starSize, 0., 0.);
         glMaterialfv(GL_FRONT, GL_AMBIENT, planet_ambient_and_diffuse);
         glMaterialf(GL_FRONT, GL_EMISSION, planet_emission);
-        this->artificalSatillite(planets.at(i).getRadius());
-//        glBegin(GL_POLYGON);
-//            GLUquadric* planetQuadric = gluNewQuadric();
-//            gluSphere(planetQuadric, planets.at(i).getRadius(), 16, 16);
-//            gluDeleteQuadric(planetQuadric);
-//        glEnd();
+        glBegin(GL_POLYGON);
+            GLUquadric* planetQuadric = gluNewQuadric();
+            gluSphere(planetQuadric, planets.at(i).getRadius(), 16, 16);
+            gluDeleteQuadric(planetQuadric);
+        glEnd();
         glPopMatrix();
-//        std::vector<Satillite> satillites = planets.at(i).getSatillites();
-//        for(unsigned int j = 0; j < satillites.size(); j++)
-//        {
-//            glPushMatrix();
-//            glRotatef(planets.at(i).getPosition(), 0., 1., 0.);
-//            glTranslatef(planets.at(i).getDistanceFromSun() + this->starSize, 0., 0.);
-//            glRotatef(satillites.at(j).getPosition(), 0., 1., 0.);
-//            glTranslatef(0.1, 0., 0.);
-//            this->sphere(0.05, 20, 20);
-//            glPopMatrix();
-//        }
+        std::vector<Satillite>* satillites = planets.at(i).getSatillites();
+        for(unsigned int j = 0; j < satillites->size(); j++)
+        {
+            glPushMatrix();
+            glRotatef(satillites->at(j).getPosition(), 0., 1., 0.);
+            glTranslatef(satillites->at(j).getDistanceFromPlanet(), 0., 0.);
+            glRotatef(planets.at(i).getPosition(), 0., 1., 0.);
+            glTranslatef(planets.at(i).getDistanceFromSun() + this->starSize, 0., 0.);
+
+            if(satillites->at(j).isMoon())
+            {
+                glBegin(GL_POLYGON);
+                    GLUquadric* moonQuadric = gluNewQuadric();
+                    gluSphere(moonQuadric, 2.0, 20, 20);
+                    gluDeleteQuadric(moonQuadric);
+                glEnd();
+            }
+            else
+            {
+                this->artificalSatillite(satillites->at(j).getRadius());
+            }
+            glPopMatrix();
+        }
     }
 //    qDebug() << -planets.at(this->cameraFocus).getDistanceFromSun() << -planets.at(this->cameraFocus).getPosition();
 //    glTranslatef(planets.at(this->cameraFocus).getDistanceFromSun() + this->starSize, 0. ,0.);
