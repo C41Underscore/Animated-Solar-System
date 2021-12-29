@@ -10,19 +10,30 @@ ViewWidget::ViewWidget(QWidget* parent) : QGLWidget(parent)
     this->model.addPlanet(Planet("Mercury", 88., 2439.7, 57910000.));
     this->model.addPlanet(Planet("Venus", 225., 6051.8, 108200000.));
     Planet earth("Earth", 365., 6371., 149600000.);
-    earth.addSatillite(Satillite(27., 1737.4, 384400., true));
+    earth.addSatillite(Satillite(27., 1737.4, 384400., true)); // The Moon
+    earth.addSatillite(Satillite(3., 500., 584400., false)); // The Hubble, let's say
     this->model.addPlanet(earth);
-    this->model.addPlanet(Planet("Mars", 687., 3389.5, 227900000.));
+    Planet mars("Mars", 687., 3389.5, 227900000.);
+    mars.addSatillite(Satillite(8./24., 11.267, 9376., true)); // Phobos
+    mars.addSatillite(Satillite(1.263, 6.2, 23458., true)); // Diemos
+    this->model.addPlanet(mars);
     Planet jupiter("Jupiter", (float)12*365, 69911., 778000000.);
-    jupiter.addSatillite(Satillite(85./24., 1560.8, 671100.,  true));
-    jupiter.addSatillite(Satillite(172./24., 2631.2, 1070400., true));
-    jupiter.addSatillite(Satillite(42./24., 1821.6, 421800., true));
+    jupiter.addSatillite(Satillite(85./24., 1560.8, 671100.,  true)); // Europa
+    jupiter.addSatillite(Satillite(172./24., 2631.2, 1070400., true)); // Ganymede
+    jupiter.addSatillite(Satillite(42./24., 1821.6, 421800., true)); // Io
+    jupiter.addSatillite(Satillite(17., 2410.3, 1882700., true)); // Callisto
     this->model.addPlanet(jupiter);
-    this->model.addPlanet(Planet("Saturn", (float)29*365, 58232., 1434000000.));
-    this->model.addPlanet(Planet("Uranus", (float)84*365, 25362., 2871000000.));
-    this->model.addPlanet(Planet("Neptune", (float)165*365, 24622., 4495000000.));
+    Planet saturn("Saturn", (float)29*365, 58232., 1434000000.);
+    saturn.addSatillite(Satillite(16., 2574.7, 149598262., true)); // Titan
+    this->model.addPlanet(saturn);
+    Planet uranus("Uranus", (float)84*365, 25362., 2871000000.);
+    uranus.addSatillite(Satillite(209./24., 788.4, 436300., true)); // Titania
+    this->model.addPlanet(uranus);
+    Planet neptune("Neptune", (float)165*365, 24622., 4495000000.);
+    neptune.addSatillite(Satillite(141./24., 1353.4, 345759., true)); // Triton
+    this->model.addPlanet(neptune);
     this->model.normalise(MODEL_SIZE);
-    this->speed = 0.005;
+    this->speed = 0.0005;
     this->lightPosition = 5.;
     this->starSize = 3.;
     this->cameraFocus = -1.;
@@ -65,7 +76,7 @@ void ViewWidget::initializeGL()
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
     glMatrixMode(GL_PROJECTION);
-    float betterModelSize = MODEL_SIZE + 1.;
+    float betterModelSize = MODEL_SIZE + MODEL_SIZE/4.;
     glOrtho(-betterModelSize, betterModelSize, -betterModelSize, betterModelSize, -betterModelSize, betterModelSize);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
@@ -230,7 +241,7 @@ void ViewWidget::paintGL()
         Planet focusPlanet = planets.at(this->cameraFocus);
         float planetX = (planets.at(this->cameraFocus).getDistanceFromSun() + this->starSize)*sin(planets.at(this->cameraFocus).getPosition());
         float planetZ = (planets.at(this->cameraFocus).getDistanceFromSun() + this->starSize)*cos(planets.at(this->cameraFocus).getPosition());
-        glScalef(2./focusPlanet.getRadius(), 2./focusPlanet.getRadius(), 2./focusPlanet.getRadius());
+        glScalef(4./focusPlanet.getRadius(), 4./focusPlanet.getRadius(), 4./focusPlanet.getRadius());
         glTranslatef(-planetX, 0., -planetZ);
     }
 
@@ -251,6 +262,8 @@ void ViewWidget::paintGL()
     glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, sun_ambient_and_diffuse);
     glMaterialf(GL_FRONT, GL_EMISSION, sun_emission);
 
+    this->starSize = 10.;
+
     glBegin(GL_POLYGON);
         GLUquadric* sunQuadric = gluNewQuadric();
         gluSphere(sunQuadric, this->starSize, 16, 16);
@@ -262,8 +275,6 @@ void ViewWidget::paintGL()
 
     glMaterialfv(GL_FRONT, GL_AMBIENT, planet_ambient_and_diffuse);
     glMaterialf(GL_FRONT, GL_EMISSION, planet_emission);
-
-//    this->artificalSatillite(1.);
 
     for(unsigned int i = 0; i < planets.size(); i++)
     {

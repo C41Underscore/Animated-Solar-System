@@ -2,7 +2,7 @@
 
 #include <QDebug>
 
-Satillite::Satillite(float orbitPeriod, float radius, float distanceFromPlanet, bool isMoon)
+Satillite::Satillite(float orbitPeriod, float radius, float distanceFromPlanet, bool isMoon, float xRotation, float zRotation)
 {
     this->orbitPeriod = orbitPeriod;
     this->radius = radius;

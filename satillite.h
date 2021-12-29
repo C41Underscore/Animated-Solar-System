@@ -4,7 +4,7 @@
 class Satillite
 {
 public:
-    Satillite(float orbitPeriod, float radius, float distanceFromPlanet, bool isMoon);
+    Satillite(float orbitPeriod, float radius, float distanceFromPlanet, bool isMoon, float xRotation = 0., float zRotation = 0.);
 
 private:
     float orbitPeriod;
