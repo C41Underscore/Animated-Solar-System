@@ -24,7 +24,7 @@ MainWindow::MainWindow(QWidget *parent)
     sizeControl = new QComboBox();
     sizeControl->addItems({"The Sun", "Mercury", "Venus", "Earth", "Mars", "Jupiter", "Saturn", "Uranus", "Neptune"});
     sizeControl->setCurrentIndex(0);
-    connect(sizeControl, SIGNAL(currentTextChanged(const QString&)), viewPort, SLOT(updateSizes(const QString&)));
+    connect(sizeControl, SIGNAL(currentTextChanged(const QString&)), viewPort, SLOT(updateView(const QString&)));
 
 
     layout->addWidget(viewPort);

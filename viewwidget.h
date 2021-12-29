@@ -34,7 +34,7 @@ private:
 
 public slots:
     void updateSpeed(int newSpeed);
-    void updateSizes(const QString& objectName);
+    void updateView(const QString& objectName);
     void updateStarSize(int newSize);
 };
 

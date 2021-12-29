@@ -18,7 +18,6 @@ void Satillite::updatePosition(float speed)
     {
         this->position -= 360.;
     }
-    qDebug() << "Moon position: " << this->position;
 }
 
 float Satillite::getDistanceFromPlanet()
