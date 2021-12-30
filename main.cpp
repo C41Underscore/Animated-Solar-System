@@ -3,10 +3,10 @@
 #include <QApplication>
 
 // TODO - Add textures
-// TODO - Add some sort of comet thing, maybe click a button and one flies across the screen
+// TODO - Add a spaceship, which flies across the screen when a button is pushed, this can also our convex model with normals.
 // TODO - Add a stary background
-// TODO - Allow for staillites (Moons, Artifical). This is our hierarchial modelling
-// TODO - Have satillite orbit at different angles.  Look into 3D polar coordinates
+// TODO - Space items out a bit better, so it looks a bit nicer
+// TODO - Maybe allow for the user to move around and zoom using arrow keys (simple translations really) - implemented but bugged, COMBOBOX!
 
 int main(int argc, char *argv[])
 {

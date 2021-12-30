@@ -1,10 +1,12 @@
 #ifndef SATILLITE_H
 #define SATILLITE_H
 
+#import <math.h>
+
 class Satillite
 {
 public:
-    Satillite(float orbitPeriod, float radius, float distanceFromPlanet, bool isMoon, float xRotation = 0., float zRotation = 0.);
+    Satillite(float orbitPeriod, float radius, float distanceFromPlanet, bool isMoon);
 
 private:
     float orbitPeriod;
@@ -12,6 +14,7 @@ private:
     float distanceFromPlanet;
     float orbitSpeed;
     float position;
+    float verticalPosition;
     int texture;
     bool moon;
 
@@ -21,6 +24,7 @@ public:
     float getRadius();
     float getOrbitSpeed();
     float getPosition();
+    float getVerticalPosition();
     bool isMoon();
     void setRadius(float radius);
     void setDistanceFromPlanet(float distance);

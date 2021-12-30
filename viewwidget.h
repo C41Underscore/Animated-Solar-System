@@ -15,6 +15,9 @@ class ViewWidget : public QGLWidget
     Q_OBJECT
 public:
     ViewWidget(QWidget* parent);
+    void moveCamera(bool up, bool down, bool left, bool right);
+    void updateZoom(bool trueForUp);
+    void rotateCamera(bool trueForRight);
 
 protected:
     void initializeGL();
@@ -25,8 +28,12 @@ private:
     SolarSystem model;
     float speed;
     float lightPosition;
-    int starSize;
+    float zoom;
     int cameraFocus;
+    bool newFocus;
+    float movementUp;
+    float movementRight;
+    float rotation;
     void artificalSatillite(float size);
     void satilliteArm(float size);
     void satilliteDish(double r, int lats, int longs);
@@ -35,7 +42,7 @@ private:
 public slots:
     void updateSpeed(int newSpeed);
     void updateView(const QString& objectName);
-    void updateStarSize(int newSize);
+
 };
 
 #endif // VIEWWIDGET_H
