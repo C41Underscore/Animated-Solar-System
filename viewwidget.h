@@ -31,8 +31,8 @@ private:
     float zoom;
     int cameraFocus;
     bool newFocus;
-    float movementUp;
-    float movementRight;
+    float movementX;
+    float movementZ;
     float rotation;
     void artificalSatillite(float size);
     void satilliteArm(float size);
