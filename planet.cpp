@@ -8,7 +8,7 @@ Planet::Planet(std::string name, float orbitPeriod, float radius, float distance
     this->distanceFromSun = distanceFromSun;
     this->orbitSpeed = 360./this->orbitPeriod;
     this->position = 0;
-    this->satillites = std::vector<Satillite>();
+    this->satillites = std::vector<Satillite*>();
 }
 
 void Planet::updatePosition(float speed)
@@ -25,7 +25,7 @@ void Planet::updateSatillitePositions(float speed)
 {
     for(unsigned int i = 0; i < this->satillites.size(); i++)
     {
-        this->satillites.at(i).updatePosition(speed);
+        this->satillites.at(i)->updatePosition(speed);
     }
 }
 
@@ -69,12 +69,12 @@ void Planet::setDistanceFromSun(float distance)
     this->distanceFromSun = distance;
 }
 
-void Planet::addSatillite(Satillite newSatillite)
+void Planet::addSatillite(Satillite* newSatillite)
 {
     this->satillites.push_back(newSatillite);
 }
 
-std::vector<Satillite>* Planet::getSatillites()
+std::vector<Satillite*>* Planet::getSatillites()
 {
     return &this->satillites;
 }

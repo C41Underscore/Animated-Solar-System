@@ -4,34 +4,45 @@
 
 static float MODEL_SIZE = 20.;
 
+GLfloat silver_moon_ambient_and_diffuse[] = {192./255., 192./255., 192./255., 1.0};
+GLfloat silver_moon_specular[] = {192./255., 192./255., 192./255., 0.05};
+GLfloat silver_moon_shininess = 30.;
+GLfloat silver_moon_emissive = 0.;
+
 ViewWidget::ViewWidget(QWidget* parent) : QGLWidget(parent)
 {
     this->model = SolarSystem("Sol", 696340.);
     this->model.addPlanet(Planet("Mercury", 88., 2439.7, 57910000.));
     this->model.addPlanet(Planet("Venus", 225., 6051.8, 108200000.));
     Planet earth("Earth", 365., 6371., 149600000.);
-    earth.addSatillite(Satillite(27., 1737.4, 384400., true)); // The Moon
-    earth.addSatillite(Satillite(50., 500., 599999999., false)); // The Hubble, let's say
+    Satillite* theMoon = new Satillite(27., 1737.4, 384400., true);
+    theMoon->setLighting(silver_moon_ambient_and_diffuse,
+                        silver_moon_ambient_and_diffuse,
+                        silver_moon_specular, silver_moon_shininess,
+                        silver_moon_emissive);
+    earth.addSatillite(theMoon); // The Moon
+    earth.addSatillite(new Satillite(50., 500., 599999999., false)); // The Hubble, let's say
     this->model.addPlanet(earth);
     Planet mars("Mars", 687., 3389.5, 227900000.);
-    mars.addSatillite(Satillite(8./24., 11.267, 9376., true)); // Phobos
-    mars.addSatillite(Satillite(1.263, 6.2, 23458., true)); // Diemos
+    mars.addSatillite(new Satillite(8./24., 11.267, 9376., true)); // Phobos
+    mars.addSatillite(new Satillite(1.263, 6.2, 23458., true)); // Diemos
+    mars.addSatillite(new Satillite(60., 400., 599999999., false));
     this->model.addPlanet(mars);
     Planet jupiter("Jupiter", (float)12*365, 69911., 778000000.);
-    jupiter.addSatillite(Satillite(85./24., 1560.8, 671100.,  true)); // Europa
-    jupiter.addSatillite(Satillite(172./24., 2631.2, 1070400., true)); // Ganymede
-    jupiter.addSatillite(Satillite(42./24., 1821.6, 421800., true)); // Io
-    jupiter.addSatillite(Satillite(17., 2410.3, 1882700., true)); // Callisto
+    jupiter.addSatillite(new Satillite(85./24., 1560.8, 671100.,  true)); // Europa
+    jupiter.addSatillite(new Satillite(172./24., 2631.2, 1070400., true)); // Ganymede
+    jupiter.addSatillite(new Satillite(42./24., 1821.6, 421800., true)); // Io
+    jupiter.addSatillite(new Satillite(17., 2410.3, 1882700., true)); // Callisto
     this->model.addPlanet(jupiter);
     Planet saturn("Saturn", (float)29*365, 58232., 1434000000.);
-    saturn.addSatillite(Satillite(16., 2574.7, 149598262., true)); // Titan
+    saturn.addSatillite(new Satillite(16., 2574.7, 149598262., true)); // Titan
     this->model.addPlanet(saturn);
     Planet uranus("Uranus", (float)84*365, 25362., 2871000000.);
-    uranus.addSatillite(Satillite(209./24., 788.4, 436300., true)); // Titania
+    uranus.addSatillite(new Satillite(209./24., 788.4, 436300., true)); // Titania
     this->model.addPlanet(uranus);
     Planet neptune("Neptune", (float)165*365, 24622., 4495000000.);
-    neptune.addSatillite(Satillite(141./24., 1353.4, 345759., true)); // Triton
-    neptune.addSatillite(Satillite(50., 500., 599999999., false));
+    neptune.addSatillite(new Satillite(141./24., 1353.4, 345759., true)); // Triton
+    neptune.addSatillite(new Satillite(50., 550., 599999999., false));
     this->model.addPlanet(neptune);
     this->model.normalise(MODEL_SIZE);
     this->speed = 0.0005;
@@ -46,35 +57,41 @@ ViewWidget::ViewWidget(QWidget* parent) : QGLWidget(parent)
 
 void ViewWidget::moveCamera(bool up, bool down, bool left, bool right)
 {
-    float movement = 0.2;
-    if(up)
+    if(this->cameraFocus == -1)
     {
-        this->movementUp += movement;
-    }
-    else if(down)
-    {
-        this->movementUp -= movement;
-    }
-    else if(left)
-    {
-        this->movementRight -= movement;
-    }
-    else if(right)
-    {
-        this->movementRight += movement;
+        float movement = 0.5;
+        if(up)
+        {
+            this->movementUp += movement;
+        }
+        else if(down)
+        {
+            this->movementUp -= movement;
+        }
+        else if(left)
+        {
+            this->movementRight -= movement;
+        }
+        else if(right)
+        {
+            this->movementRight += movement;
+        }
     }
 }
 
 void ViewWidget::rotateCamera(bool trueForRight)
 {
-    float rotate = 0.2;
-    if(trueForRight)
+    if(this->cameraFocus == -1)
     {
-        this->rotation += rotate;
-    }
-    else
-    {
-        this->rotation -= rotate;
+        float rotate = 0.5;
+        if(trueForRight)
+        {
+            this->rotation += rotate;
+        }
+        else
+        {
+            this->rotation -= rotate;
+        }
     }
 }
 
@@ -106,7 +123,7 @@ void ViewWidget::updateView(const QString& objectName)
 
 void ViewWidget::updateZoom(bool trueForUp)
 {
-    float zoom = 0.01;
+    float zoom = 0.5;
     if(trueForUp)
     {
         this->zoom += zoom;
@@ -114,6 +131,10 @@ void ViewWidget::updateZoom(bool trueForUp)
     else
     {
         this->zoom -= zoom;
+        if(this->zoom < zoom)
+        {
+            this->zoom = zoom;
+        }
     }
     qDebug() << this->zoom;
     update();
@@ -300,14 +321,21 @@ void ViewWidget::paintGL()
         Planet focusPlanet = planets.at(this->cameraFocus);
         float planetX = (planets.at(this->cameraFocus).getDistanceFromSun() + starSize)*sin(planets.at(this->cameraFocus).getPosition());
         float planetZ = (planets.at(this->cameraFocus).getDistanceFromSun() + starSize)*cos(planets.at(this->cameraFocus).getPosition());
+        glScalef(this->zoom, this->zoom, this->zoom);
+        glTranslatef(-this->movementUp, 0., -this->movementRight);
+        glRotatef(-this->rotation, 0., 1., 0.);
         glTranslatef(-planetX, 0., -planetZ);
         this->newFocus = false;
+        this->rotation = 0.;
         this->movementUp = 0.;
         this->movementRight = 0.;
     }
-    glTranslatef(this->movementUp, 0., this->movementRight);
-    glScalef(this->zoom, this->zoom, this->zoom);
-    glRotatef(this->rotation, 0., 1., 0.);
+    else
+    {
+        glScalef(this->zoom, this->zoom, this->zoom);
+        glTranslatef(this->movementUp, 0., this->movementRight);
+        glRotatef(this->rotation, 0., 1., 0.);
+    }
     GLfloat light_pos[] = {0., 0., 0., 1.};
     this->lightPosition -= 0.01;
     //glOrtho(-this->lightPosition, this->lightPosition, -this->lightPosition, this->lightPosition, -this->lightPosition, this->lightPosition);
@@ -354,26 +382,35 @@ void ViewWidget::paintGL()
             gluDeleteQuadric(planetQuadric);
         glEnd();
         glPopMatrix();
-        std::vector<Satillite>* satillites = planets.at(i).getSatillites();
+        std::vector<Satillite*>* satillites = planets.at(i).getSatillites();
         for(unsigned int j = 0; j < satillites->size(); j++)
         {
             glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, planet_ambient_and_diffuse);
             glMaterialf(GL_FRONT, GL_EMISSION, planet_emission);
             glMaterialf(GL_FRONT, GL_SHININESS, planet_shininess);
             glPushMatrix();
-            Satillite currentSatillite = satillites->at(j);
+            Satillite* currentSatillite = satillites->at(j);
             float satilliteX = 0., satilliteY = 0., satilliteZ = 0.;
-            satilliteX = (currentSatillite.getDistanceFromPlanet() + currentSatillite.getRadius()*2)*cos(currentSatillite.getPosition());
-            satilliteZ = (currentSatillite.getDistanceFromPlanet() + currentSatillite.getRadius()*2)*sin(currentSatillite.getPosition());
+            satilliteX = (currentSatillite->getDistanceFromPlanet() + currentSatillite->getRadius()*2)*cos(currentSatillite->getPosition());
+            satilliteZ = (currentSatillite->getDistanceFromPlanet() + currentSatillite->getRadius()*2)*sin(currentSatillite->getPosition());
             glTranslatef(satilliteX, 0., satilliteZ);
             glTranslatef(planetX, 0., planetZ);
 
             // rotate
-            if(satillites->at(j).isMoon())
+            if(currentSatillite->isMoon())
             {
+                if(currentSatillite->texturesAreSet())
+                {
+                    qDebug() << currentSatillite->getAmbient();
+                    glMaterialfv(GL_FRONT, GL_AMBIENT, silver_moon_ambient_and_diffuse);
+                    glMaterialfv(GL_FRONT, GL_DIFFUSE, silver_moon_ambient_and_diffuse);
+                    glMaterialfv(GL_FRONT, GL_SPECULAR, silver_moon_specular);
+                    glMaterialf(GL_FRONT, GL_SHININESS, silver_moon_shininess);
+                    glMaterialf(GL_FRONT, GL_EMISSION, silver_moon_emissive);
+                }
                 glBegin(GL_POLYGON);
                     GLUquadric* moonQuadric = gluNewQuadric();
-                    gluSphere(moonQuadric, satillites->at(j).getRadius(), 20, 20);
+                    gluSphere(moonQuadric, currentSatillite->getRadius(), 20, 20);
                     gluDeleteQuadric(moonQuadric);
                 glEnd();
             }
@@ -392,7 +429,7 @@ void ViewWidget::paintGL()
 //                glTranslatef(satilliteX, 0., satilliteZ);
 //                glRotatef(30., 0., 0., 1.);
 //
-                this->artificalSatillite(satillites->at(j).getRadius());
+                this->artificalSatillite(currentSatillite->getRadius());
 //                this->artificalSatillite(0.7);
 //                glPopMatrix();
 //                glRotatef(45., 1., 0., 1.);

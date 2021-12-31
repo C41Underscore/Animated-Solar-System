@@ -76,15 +76,15 @@ void SolarSystem::normalise(float scalar, std::string specifiedPlanet)
     }
     for(unsigned int i = 0; i < this->planets.size(); i++)
     {
-        std::vector<Satillite>* satillites = this->planets.at(i).getSatillites();
+        std::vector<Satillite*>* satillites = this->planets.at(i).getSatillites();
         for(unsigned int j = 0; j < satillites->size(); j++)
         {
 //            float newSatilliteDistance = satillites->at(j).getDistanceFromPlanet()/this->planets.at(i).getDistanceFromSun();
-            float newSatilliteDistance = satillites->at(j).getDistanceFromPlanet()/highest_distance;
+            float newSatilliteDistance = satillites->at(j)->getDistanceFromPlanet()/highest_distance;
 //            float newSatilliteRadius = satillites->at(j).getRadius()/this->planets.at(i).getRadius();
-            float newSatilliteRadius = satillites->at(j).getRadius()/highest_radius;
-            satillites->at(j).setDistanceFromPlanet(newSatilliteDistance);
-            satillites->at(j).setRadius(newSatilliteRadius);
+            float newSatilliteRadius = satillites->at(j)->getRadius()/highest_radius;
+            satillites->at(j)->setDistanceFromPlanet(newSatilliteDistance);
+            satillites->at(j)->setRadius(newSatilliteRadius);
         }
         float newRadius = this->planets.at(i).getRadius()/highest_radius;
         float newDistance = (this->planets.at(i).getDistanceFromSun()/highest_distance)*scalar;
@@ -92,7 +92,7 @@ void SolarSystem::normalise(float scalar, std::string specifiedPlanet)
         this->planets.at(i).setDistanceFromSun(newDistance);
         for(unsigned int j = 0; j < satillites->size(); j++)
         {
-            satillites->at(j).setDistanceFromPlanet(satillites->at(j).getDistanceFromPlanet() + this->planets.at(i).getRadius());
+            satillites->at(j)->setDistanceFromPlanet(satillites->at(j)->getDistanceFromPlanet() + this->planets.at(i).getRadius());
         }
     }
 }

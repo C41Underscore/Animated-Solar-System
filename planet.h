@@ -16,7 +16,7 @@ private:
     float orbitSpeed;
     float position;
     int texture;
-    std::vector<Satillite> satillites;
+    std::vector<Satillite*> satillites;
 
 public:
     Planet(std::string name, float orbitPeriod, float radius, float distanceFromSun);
@@ -26,11 +26,11 @@ public:
     float getDistanceFromSun();
     float getOrbitSpeed();
     float getPosition();
-    std::vector<Satillite>* getSatillites();
+    std::vector<Satillite*>* getSatillites();
     void updatePosition(float speed);
     void setRadius(float radius);
     void setDistanceFromSun(float distance);
-    void addSatillite(Satillite newSatillite);
+    void addSatillite(Satillite* newSatillite);
     void updateSatillitePositions(float speed);
 };
 

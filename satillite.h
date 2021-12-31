@@ -1,7 +1,8 @@
 #ifndef SATILLITE_H
 #define SATILLITE_H
 
-#import <math.h>
+#include <math.h>
+#include <GL/glu.h>
 
 class Satillite
 {
@@ -15,7 +16,12 @@ private:
     float orbitSpeed;
     float position;
     float verticalPosition;
-    int texture;
+    bool texturesSet;
+    GLfloat* ambient;
+    GLfloat* diffuse;
+    GLfloat* specular;
+    GLfloat shininess;
+    GLfloat emissive;
     bool moon;
 
 public:
@@ -25,9 +31,16 @@ public:
     float getOrbitSpeed();
     float getPosition();
     float getVerticalPosition();
+    GLfloat* getAmbient();
+    GLfloat* getDiffuse();
+    GLfloat* getSpecular();
+    GLfloat getShininess();
+    GLfloat getEmissive();
     bool isMoon();
+    bool texturesAreSet();
     void setRadius(float radius);
     void setDistanceFromPlanet(float distance);
+    void setLighting(GLfloat ambient[], GLfloat diffuse[], GLfloat specular[], GLfloat shininess, GLfloat emissive);
 };
 
 #endif // SATILLITE_H
