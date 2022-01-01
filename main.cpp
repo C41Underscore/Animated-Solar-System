@@ -2,6 +2,9 @@
 
 #include <QApplication>
 
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+
 // TODO - Add textures
 // TODO - Add a spaceship, which flies across the screen when a button is pushed, this can also our convex model with normals.
 // TODO - Add a stary background

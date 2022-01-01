@@ -1,6 +1,7 @@
 #ifndef VIEWWIDGET_H
 #define VIEWWIDGET_H
 
+#include <GL/glew.h>
 #include <QGLWidget>
 #include <QTimer>
 #include <QObject>
@@ -8,6 +9,8 @@
 #include <GL/glut.h>
 #include <math.h>
 #include "solarsystem.h"
+#include <stb_image.h>
+
 
 
 class ViewWidget : public QGLWidget

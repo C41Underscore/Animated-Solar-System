@@ -4,6 +4,12 @@
 
 static float MODEL_SIZE = 20.;
 
+float texCoords[] = {
+    0., 0.,
+    1., 0.,
+    .5, 1.
+};
+
 GLfloat silver_body_ambient_and_diffuse[] = {192./255., 192./255., 192./255., 1.0};
 GLfloat silver_body_specular[] = {192./255., 192./255., 192./255., 0.00};
 GLfloat silver_body_shininess = 0.1;
@@ -183,6 +189,23 @@ void ViewWidget::initializeGL()
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     glEnable(GL_NORMALIZE);
+
+    // big texture time
+    GLuint tex;
+    glGenTextures(1, &tex);
+    glBindTexture(GL_TEXTURE_2D, tex);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    int w, h, nChannels;
+    unsigned char* idata = stbi_load("Marc_Dekamps.ppm", &w, &h, &nChannels, 0);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, idata);
+
+
+//    glGenerateMipmap(GL_TEXTURE_2D);
+
+    // big texture time
 
     QTimer* timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(update()));
@@ -381,8 +404,6 @@ void ViewWidget::paintGL()
         this->lightPosition = 5.;
     }
     glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
-
-//    glScalef(this->lightPosition, this->lightPosition, this->lightPosition);
 
     this->model.tick(this->speed);
     GLfloat sun_ambient_and_diffuse[] = {1.0, 0.87, 0., 1.0};
