@@ -15,7 +15,7 @@ private:
     float distanceFromSun;
     float orbitSpeed;
     float position;
-    int texture;
+    GLuint textureUnitIndex;
     std::vector<Satillite*> satillites;
 
 public:
@@ -26,10 +26,12 @@ public:
     float getDistanceFromSun();
     float getOrbitSpeed();
     float getPosition();
+    GLuint getTextureUnitIndex();
     std::vector<Satillite*>* getSatillites();
     void updatePosition(float speed);
     void setRadius(float radius);
     void setDistanceFromSun(float distance);
+    void setTextureUnitIndex(GLuint unit);
     void addSatillite(Satillite* newSatillite);
     void updateSatillitePositions(float speed);
 };

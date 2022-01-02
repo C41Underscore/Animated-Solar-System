@@ -36,7 +36,6 @@ public:
 private:
     ViewWidget* viewPort;
     QSlider* speedControl;
-    QSlider* zoomControl;
     QComboBox* focusControl;
     QBoxLayout* layout;
 };

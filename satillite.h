@@ -16,7 +16,8 @@ private:
     float orbitSpeed;
     float position;
     float verticalPosition;
-    bool texturesSet;
+    GLuint textureUnitIndex;
+    bool lightingSet;
     GLfloat* ambient;
     GLfloat* diffuse;
     GLfloat* specular;
@@ -36,11 +37,13 @@ public:
     GLfloat* getSpecular();
     GLfloat getShininess();
     GLfloat getEmissive();
+    GLuint getTextureUnitIndex();
     bool isMoon();
-    bool texturesAreSet();
+    bool lightingIsSet();
     void setRadius(float radius);
     void setDistanceFromPlanet(float distance);
     void setLighting(GLfloat ambient[], GLfloat diffuse[], GLfloat specular[], GLfloat shininess, GLfloat emissive);
+    void setTextureUnitIndex(GLuint index);
 };
 
 #endif // SATILLITE_H

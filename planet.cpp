@@ -49,6 +49,11 @@ float Planet::getDistanceFromSun()
     return this->distanceFromSun + this->radius;
 }
 
+GLuint Planet::getTextureUnitIndex()
+{
+    return this->textureUnitIndex;
+}
+
 float Planet::getOrbitSpeed()
 {
     return this->orbitSpeed;
@@ -67,6 +72,11 @@ void Planet::setRadius(float radius)
 void Planet::setDistanceFromSun(float distance)
 {
     this->distanceFromSun = distance;
+}
+
+void Planet::setTextureUnitIndex(GLuint unit)
+{
+    this->textureUnitIndex = unit;
 }
 
 void Planet::addSatillite(Satillite* newSatillite)

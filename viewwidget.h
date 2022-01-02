@@ -8,8 +8,10 @@
 #include <GL/glu.h>
 #include <GL/glut.h>
 #include <math.h>
-#include "solarsystem.h"
+#include <QPair>
+#include <QDebug>
 #include <stb_image.h>
+#include "solarsystem.h"
 
 
 
@@ -18,9 +20,9 @@ class ViewWidget : public QGLWidget
     Q_OBJECT
 public:
     ViewWidget(QWidget* parent);
-    void moveCamera(bool up, bool down, bool left, bool right);
+    void moveCamera(bool up, bool down, bool forwards, bool backwards, bool left, bool right);
     void updateZoom(bool trueForUp);
-    void rotateCamera(bool trueForRight);
+    void rotateCamera(bool up, bool down, bool left, bool right);
 
 protected:
     void initializeGL();
@@ -35,8 +37,10 @@ private:
     int cameraFocus;
     bool newFocus;
     float movementX;
+    float movementY;
     float movementZ;
-    float rotation;
+    float rotationY;
+    float rotationZ;
     void artificalSatillite(float size);
     void satilliteArm(float size);
     void satilliteDish(double r, int lats, int longs);

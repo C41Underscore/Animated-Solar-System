@@ -10,7 +10,8 @@ Satillite::Satillite(float orbitPeriod, float radius, float distanceFromPlanet, 
     this->moon = isMoon;
     this->orbitSpeed = 360./this->orbitPeriod;
     this->position = 0.;
-    this->texturesSet = false;
+    this->lightingSet = false;
+    this->textureUnitIndex = 0.;
     if(!isMoon)
     {
         this->verticalPosition = 0.;
@@ -84,14 +85,19 @@ GLfloat Satillite::getEmissive()
     return this->emissive;
 }
 
+GLuint Satillite::getTextureUnitIndex()
+{
+    return this->textureUnitIndex;
+}
+
 bool Satillite::isMoon()
 {
     return this->moon;
 }
 
-bool Satillite::texturesAreSet()
+bool Satillite::lightingIsSet()
 {
-    return this->texturesSet;
+    return this->lightingSet;
 }
 
 void Satillite::setRadius(float radius)
@@ -113,6 +119,11 @@ void Satillite::setLighting(GLfloat* ambient, GLfloat* diffuse, GLfloat* specula
         this->specular = specular;
         this->shininess = shininess;
         this->emissive = emissive;
-        this->texturesSet = true;
+        this->lightingSet = true;
     }
+}
+
+void Satillite::setTextureUnitIndex(GLuint index)
+{
+    this->textureUnitIndex = index;
 }

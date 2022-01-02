@@ -14,13 +14,6 @@ MainWindow::MainWindow(QWidget *parent)
     speedControl->setSliderPosition(1);
     connect(speedControl, SIGNAL(valueChanged(int)), viewPort, SLOT(updateSpeed(int)));
 
-    zoomControl = new QSlider(Qt::Horizontal);
-//    zoomControl->setMaximum(25);
-//    zoomControl->setMinimum(1);
-//    zoomControl->setSingleStep(1);
-//    zoomControl->setSliderPosition(1);
-//    connect(zoomControl, SIGNAL(valueChanged(int)), viewPort, SLOT(updateZoom(int)));
-
     focusControl = new QComboBox();
     focusControl->addItems({"The Sun", "Mercury", "Venus", "Earth", "Mars", "Jupiter", "Saturn", "Uranus", "Neptune"});
     focusControl->setCurrentIndex(0);
@@ -30,7 +23,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     layout->addWidget(viewPort);
     layout->addWidget(speedControl);
-    layout->addWidget(zoomControl);
     layout->addWidget(focusControl);
 }
 
@@ -43,36 +35,52 @@ MainWindow::~MainWindow()
 
 void MainWindow::keyPressEvent(QKeyEvent *event)
 {
+    if(event->key() == Qt::Key_Q)
+    {
+        this->viewPort->moveCamera(true, false, false, false, false, false);
+    }
+    if(event->key() == Qt::Key_E)
+    {
+        this->viewPort->moveCamera(false, true, false, false, false, false);
+    }
     if(event->key() == Qt::Key_W)
     {
-        this->viewPort->moveCamera(true, false, false, false);
+        this->viewPort->moveCamera(false, false, true, false, false, false);
     }
     if(event->key() == Qt::Key_S)
     {
-        this->viewPort->moveCamera(false, true, false, false);
+        this->viewPort->moveCamera(false, false, false, true, false, false);
     }
     if(event->key() == Qt::Key_A)
     {
-        this->viewPort->moveCamera(false, false, true, false);
+        this->viewPort->moveCamera(false, false, false, false, true, false);
     }
     if(event->key() == Qt::Key_D)
     {
-        this->viewPort->moveCamera(false, false, false, true);
+        this->viewPort->moveCamera(false, false, false, false, false, true);
     }
-    if(event->key() == Qt::Key_Up)
+    if(event->key() == Qt::Key_Z)
     {
         this->viewPort->updateZoom(true);
     }
-    if(event->key() == Qt::Key_Down)
+    if(event->key() == Qt::Key_X)
     {
         this->viewPort->updateZoom(false);
     }
+    if(event->key() == Qt::Key_Up)
+    {
+        this->viewPort->rotateCamera(true, false, false, false);
+    }
+    if(event->key() == Qt::Key_Down)
+    {
+        this->viewPort->rotateCamera(false, true, false, false);
+    }
     if(event->key() == Qt::Key_Left)
     {
-        this->viewPort->rotateCamera(false);
+        this->viewPort->rotateCamera(false, false, true, false);
     }
     if(event->key() == Qt::Key_Right)
     {
-        this->viewPort->rotateCamera(true);
+        this->viewPort->rotateCamera(false, false, false, true);
     }
 }
