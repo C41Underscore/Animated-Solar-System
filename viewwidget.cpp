@@ -3,9 +3,8 @@
 static float MODEL_SIZE = 20.;
 
 #define MARC_DEKAMPS_TEX (GLuint)14
-#define BACKGROUND_TEX (GLuint)15
-#define SUN_TEX (int)0
-#define MERCURY_TEX (int)1
+#define SUN_TEX (GLuint)0
+#define MERCURY_TEX (GLuint)1
 #define VENUS_TEX (GLuint)2
 #define EARTH_TEX (GLuint)3
 #define MARS_TEX (GLuint)4
@@ -264,20 +263,17 @@ void ViewWidget::initializeGL()
     // big texture time
     glEnable(GL_TEXTURE_2D);
 
-//    glEnable(GL_TEXTURE_2D);
-
-    textures.push_back(QPair<std::string, GLuint>("Marc_Dekamps.bmp", MARC_DEKAMPS_TEX));
-    textures.push_back(QPair<std::string, GLuint>("2k_stars_milky_way.bmp", BACKGROUND_TEX));
-    textures.push_back(QPair<std::string, GLuint>("2k_sun.bmp", SUN_TEX));
-    textures.push_back(QPair<std::string, GLuint>("2k_mercury.bmp", MERCURY_TEX));
-    textures.push_back(QPair<std::string, GLuint>("2k_venus.bmp", VENUS_TEX));
-    textures.push_back(QPair<std::string, GLuint>("Mercator-projection.bmp", EARTH_TEX));
-    textures.push_back(QPair<std::string, GLuint>("2k_moon.bmp", THE_MOON_TEX));
-    textures.push_back(QPair<std::string, GLuint>("2k_mars.bmp", MARS_TEX));
-    textures.push_back(QPair<std::string, GLuint>("2k_jupiter.bmp", JUPITER_TEX));
-    textures.push_back(QPair<std::string, GLuint>("2k_saturn.bmp", SATURN_TEX));
-    textures.push_back(QPair<std::string, GLuint>("2k_uranus.bmp", URANUS_TEX));
-    textures.push_back(QPair<std::string, GLuint>("2k_neptune.bmp", NEPTUNE_TEX));
+    textures.push_back(QPair<std::string, GLuint>("textures/Marc_Dekamps.bmp", MARC_DEKAMPS_TEX));
+    textures.push_back(QPair<std::string, GLuint>("textures/2k_sun.bmp", SUN_TEX));
+    textures.push_back(QPair<std::string, GLuint>("textures/2k_mercury.bmp", MERCURY_TEX));
+    textures.push_back(QPair<std::string, GLuint>("textures/2k_venus.bmp", VENUS_TEX));
+    textures.push_back(QPair<std::string, GLuint>("textures/Mercator-projection.bmp", EARTH_TEX));
+    textures.push_back(QPair<std::string, GLuint>("textures/2k_moon.bmp", THE_MOON_TEX));
+    textures.push_back(QPair<std::string, GLuint>("textures/2k_mars.bmp", MARS_TEX));
+    textures.push_back(QPair<std::string, GLuint>("textures/2k_jupiter.bmp", JUPITER_TEX));
+    textures.push_back(QPair<std::string, GLuint>("textures/2k_saturn.bmp", SATURN_TEX));
+    textures.push_back(QPair<std::string, GLuint>("textures/2k_uranus.bmp", URANUS_TEX));
+    textures.push_back(QPair<std::string, GLuint>("textures/2k_neptune.bmp", NEPTUNE_TEX));
 
     int w, h, nChannels;
     unsigned char* idata;

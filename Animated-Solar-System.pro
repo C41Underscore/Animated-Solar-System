@@ -25,3 +25,8 @@ HEADERS += \
     stb_image.h \
     viewwidget.h
 
+copydata.commands = $(COPY_DIR) $$PWD/textures $$OUT_PWD
+first.depends = $(first) copydata
+export(first.depends)
+export(copydata.commands)
+QMAKE_EXTRA_TARGETS += first copydata
