@@ -2,14 +2,11 @@
 
 #include <QDebug>
 
-SolarSystem::SolarSystem()
-{
-
-}
+SolarSystem::SolarSystem() {}
 
 SolarSystem::SolarSystem(std::string starName, float starRadius, float starRotationSpeed)
 {
-    this->star = new Planet(starName, 0., starRadius, 0., starRotationSpeed);
+    this->star = new Planet(starName, 0., starRadius, 0., starRotationSpeed, false);
     this->planets = std::vector<Planet>();
     this->starRotation = 0.;
     this->starRotationSpeed = 360./starRotationSpeed;

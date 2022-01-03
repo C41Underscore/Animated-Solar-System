@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QBoxLayout>
+#include <QHBoxLayout>
 #include <QSlider>
 #include <QComboBox>
 #include <QKeyEvent>
@@ -38,11 +39,14 @@ public:
 
 private:
     ViewWidget* viewPort;
+    QLabel* speedLabel;
     QSlider* speedControl;
-    QComboBox* focusControl;
-    QLabel* resetLabel;
+    QHBoxLayout* speedLayout;
     QPushButton* resetButton;
     QCheckBox* marcControl;
+    QLabel* focusLabel;
+    QComboBox* focusControl;
+    QHBoxLayout* focusLayout;
     QBoxLayout* layout;
 };
 #endif // MAINWINDOW_H

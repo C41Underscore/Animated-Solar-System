@@ -2,13 +2,6 @@
 
 static float MODEL_SIZE = 20.;
 
-float texCoords[] = {
-    0., 0.,
-    1., 0.,
-    .5, 1.
-};
-
-
 #define MARC_DEKAMPS_TEX (GLuint)14
 #define BACKGROUND_TEX (GLuint)15
 #define SUN_TEX (int)0
@@ -24,6 +17,11 @@ float texCoords[] = {
 
 std::vector<QPair<std::string, GLuint>> textures = std::vector<QPair<std::string, GLuint>>();
 GLuint texUnits[16];
+
+GLfloat nothing_ambient_and_diffuse[] = {0., 0., 0., 0.};
+GLfloat nothing_specular[] = {0., 0., 0., 0.};
+GLfloat nothing_shininess = 0.;
+GLfloat nothing_emissive = 0.;
 
 GLfloat silver_body_ambient_and_diffuse[] = {192./255., 192./255., 192./255., 1.0};
 GLfloat silver_body_specular[] = {192./255., 192./255., 192./255., 0.00};
@@ -43,31 +41,26 @@ GLfloat pale_body_emissive = 0.;
 ViewWidget::ViewWidget(QWidget* parent) : QGLWidget(parent)
 {
     this->model = SolarSystem("Sol", 696340., 27.);
-    Planet mercury("Mercury", 88., 2439.7, 57910000., (58. + 15./24. + 0.5/24.));
+    Planet mercury("Mercury", 88., 2439.7, 57910000., (58. + 15./24. + 0.5/24.), false);
     mercury.setTextureUnitIndex(MERCURY_TEX);
     this->model.addPlanet(mercury);
-    Planet venus("Venus", 225., 6051.8, 108200000., (243.0226));
+    Planet venus("Venus", 225., 6051.8, 108200000., (243.0226), false);
     venus.setTextureUnitIndex(VENUS_TEX);
     this->model.addPlanet(venus);
-    Planet earth("Earth", 365., 6371., 149600000., 1.);
+    Planet earth("Earth", 365., 6371., 149600000., 1., false);
     earth.setTextureUnitIndex(EARTH_TEX);
     Satillite* theMoon = new Satillite(27., 1737.4, 384400., true);
-//    theMoon->setLighting(silver_body_ambient_and_diffuse,
-//                        silver_body_ambient_and_diffuse,
-//                        silver_body_specular,
-//                        silver_body_shininess,
-//                        silver_body_emissive);
     theMoon->setTextureUnitIndex(THE_MOON_TEX);
     earth.addSatillite(theMoon); // The Moon
     earth.addSatillite(new Satillite(50., 500., 599999999., false)); // The Hubble, let's say
     this->model.addPlanet(earth);
-    Planet mars("Mars", 687., 3389.5, 227900000., 1. + 1./24.);
+    Planet mars("Mars", 687., 3389.5, 227900000., 1. + 1./24., false);
     mars.setTextureUnitIndex(MARS_TEX);
     mars.addSatillite(new Satillite(8./24., 11.267, 9376., true)); // Phobos
     mars.addSatillite(new Satillite(1.263, 6.2, 23458., true)); // Diemos
     mars.addSatillite(new Satillite(60., 400., 599999999., false));
     this->model.addPlanet(mars);
-    Planet jupiter("Jupiter", (float)12*365, 69911., 778000000., (9./24. + (56./60.)/24.));
+    Planet jupiter("Jupiter", (float)12*365, 69911., 778000000., (9./24. + (56./60.)/24.), false);
     jupiter.setTextureUnitIndex(JUPITER_TEX);
     Satillite* europa = new Satillite(85./24., 1560.8, 671100.,  true);
     europa->setLighting(pale_body_ambient_and_diffuse,
@@ -76,7 +69,13 @@ ViewWidget::ViewWidget(QWidget* parent) : QGLWidget(parent)
                         pale_body_shininess,
                         pale_body_emissive);
     jupiter.addSatillite(europa); // Europa
-    jupiter.addSatillite(new Satillite(172./24., 2631.2, 1070400., true)); // Ganymede
+    Satillite* ganymede = new Satillite(172./24., 2631.2, 1070400., true);
+    ganymede->setLighting(silver_body_ambient_and_diffuse,
+                          silver_body_ambient_and_diffuse,
+                          silver_body_specular,
+                          silver_body_shininess,
+                          silver_body_emissive);
+    jupiter.addSatillite(ganymede); // Ganymede
     Satillite* io = new Satillite(42./24., 1821.6, 421800., true);
     io->setLighting(yellow_body_ambient_and_diffuse,
                     yellow_body_ambient_and_diffuse,
@@ -84,25 +83,44 @@ ViewWidget::ViewWidget(QWidget* parent) : QGLWidget(parent)
                     yellow_body_shininess,
                     yellow_body_emissive);
     jupiter.addSatillite(io); // Io
-    jupiter.addSatillite(new Satillite(17., 2410.3, 1882700., true)); // Callisto
+    Satillite* callisto = new Satillite(17., 2410.3, 1882700., true);
+    callisto->setLighting(pale_body_ambient_and_diffuse,
+                          pale_body_ambient_and_diffuse,
+                          pale_body_specular,
+                          pale_body_shininess,
+                          pale_body_emissive);
+    jupiter.addSatillite(callisto); // Callisto
     this->model.addPlanet(jupiter);
-    Planet saturn("Saturn", (float)29*365, 58232., 1434000000., (10./24. + (42./60.)/24.));
+    Planet saturn("Saturn", (float)29*365, 58232., 1434000000., (10./24. + (42./60.)/24.), true);
+    saturn.setRingSize(66900., 122170.);
     saturn.setTextureUnitIndex(SATURN_TEX);
-    Satillite* titan = new Satillite(16., 2574.7, 149598262., true);
+    Satillite* titan = new Satillite(16., 2574.7, 149598262., true); // Titan
     titan->setLighting(yellow_body_ambient_and_diffuse,
                        yellow_body_ambient_and_diffuse,
                        yellow_body_specular,
                        yellow_body_shininess,
                        yellow_body_emissive);
-    saturn.addSatillite(titan); // Titan
+    saturn.addSatillite(titan);
     this->model.addPlanet(saturn);
-    Planet uranus("Uranus", (float)84*365, 25362., 2871000000., (17. + (14./60.)/24.));
+    Planet uranus("Uranus", (float)84*365, 25362., 2871000000., (17. + (14./60.)/24.), false);
     uranus.setTextureUnitIndex(URANUS_TEX);
-    uranus.addSatillite(new Satillite(209./24., 788.4, 436300., true)); // Titania
+    Satillite* titania = new Satillite(209./24., 788.4, 436300., true);
+    titania->setLighting(silver_body_ambient_and_diffuse,
+                         silver_body_ambient_and_diffuse,
+                         silver_body_specular,
+                         silver_body_shininess,
+                         silver_body_emissive);
+    uranus.addSatillite(titania); // Titania
     this->model.addPlanet(uranus);
-    Planet neptune("Neptune", (float)165*365, 24622., 4495000000., (16./24. + (6./60.)/24.));
+    Planet neptune("Neptune", (float)165*365, 24622., 4495000000., (16./24. + (6./60.)/24.), false);
     neptune.setTextureUnitIndex(NEPTUNE_TEX);
-    neptune.addSatillite(new Satillite(141./24., 1353.4, 345759., true)); // Triton
+    Satillite* triton = new Satillite(141./24., 1353.4, 345759., true);
+    triton->setLighting(pale_body_ambient_and_diffuse,
+                        pale_body_ambient_and_diffuse,
+                        pale_body_specular,
+                        pale_body_shininess,
+                        pale_body_emissive);
+    neptune.addSatillite(triton); // Triton
     neptune.addSatillite(new Satillite(50., 550., 599999999., false));
     this->model.addPlanet(neptune);
     this->model.normalise(MODEL_SIZE*2);
@@ -236,12 +254,8 @@ void ViewWidget::resetPosition()
     this->movementZ = 0.;
     this->rotationY = 0.;
     this->rotationZ = 0.;
-//    this->movementX -= this->movementX;
-//    this->movementY -= this->movementY;
-//    this->movementZ -= this->movementZ;
-//    this->rotationY -= this->rotationY;
-//    this->rotationZ -= this->rotationZ;
     this->zoom = 1.;
+    this->cameraFocus = -1;
 }
 
 void ViewWidget::initializeGL()
@@ -249,9 +263,6 @@ void ViewWidget::initializeGL()
     glClearColor(0., 0., 0., 0.);
     // big texture time
     glEnable(GL_TEXTURE_2D);
-//    glEnable(GL_COLOR_MATERIAL);
-//    glEnable(GL_TEXTURE0);
-//    GLuint tex;
 
 //    glEnable(GL_TEXTURE_2D);
 
@@ -259,11 +270,13 @@ void ViewWidget::initializeGL()
     textures.push_back(QPair<std::string, GLuint>("2k_stars_milky_way.bmp", BACKGROUND_TEX));
     textures.push_back(QPair<std::string, GLuint>("2k_sun.bmp", SUN_TEX));
     textures.push_back(QPair<std::string, GLuint>("2k_mercury.bmp", MERCURY_TEX));
+    textures.push_back(QPair<std::string, GLuint>("2k_venus.bmp", VENUS_TEX));
     textures.push_back(QPair<std::string, GLuint>("Mercator-projection.bmp", EARTH_TEX));
     textures.push_back(QPair<std::string, GLuint>("2k_moon.bmp", THE_MOON_TEX));
     textures.push_back(QPair<std::string, GLuint>("2k_mars.bmp", MARS_TEX));
     textures.push_back(QPair<std::string, GLuint>("2k_jupiter.bmp", JUPITER_TEX));
     textures.push_back(QPair<std::string, GLuint>("2k_saturn.bmp", SATURN_TEX));
+    textures.push_back(QPair<std::string, GLuint>("2k_uranus.bmp", URANUS_TEX));
     textures.push_back(QPair<std::string, GLuint>("2k_neptune.bmp", NEPTUNE_TEX));
 
     int w, h, nChannels;
@@ -288,22 +301,7 @@ void ViewWidget::initializeGL()
     // big texture time
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    float betterModelSize = MODEL_SIZE;// + MODEL_SIZE/4.;
-    glOrtho(-betterModelSize, betterModelSize, -betterModelSize, betterModelSize, -betterModelSize, betterModelSize);
-
-//    glMatrixMode(GL_MODELVIEW);
-//    glLoadIdentity();
-
-////    glDepthMask(GL_FALSE);
-//    glBindTexture(GL_TEXTURE_2D, texUnits[BACKGROUND_TEX]);
-//    glBegin(GL_QUADS);
-//        glTexCoord2f(0., 1.); glVertex2f(-1., 1.);
-//        glTexCoord2f(1., 1.); glVertex2f(1., 1.);
-//        glTexCoord2f(1., 0.); glVertex2f(1., -1.);
-//        glTexCoord2f(0., 0.); glVertex2f(-1., -1.);
-//    glEnd();
-//    glBindTexture(GL_TEXTURE_2D, 0);
-////    glDepthMask(GL_TRUE);
+    glOrtho(-MODEL_SIZE, MODEL_SIZE, -MODEL_SIZE, MODEL_SIZE, -MODEL_SIZE, MODEL_SIZE);
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
@@ -455,71 +453,6 @@ void ViewWidget::artificalSatillite(float size)
     glTranslatef(-size*3.5, 0., -size/2.);
     this->satillitePanel(size);
     glPopMatrix();
-//    glPopMatrix();
-}
-
-void ViewWidget::background()
-{
-    glDisable(GL_DEPTH_TEST);
-    glBindTexture(GL_TEXTURE_2D, texUnits[BACKGROUND_TEX]);
-    // front
-    glBegin(GL_QUADS);
-        glTexCoord2f(0., 1.);
-        glVertex3f(MODEL_SIZE, MODEL_SIZE, -MODEL_SIZE);
-        glTexCoord2f(0., 0.);
-        glVertex3f(MODEL_SIZE, -MODEL_SIZE, -MODEL_SIZE);
-        glTexCoord2f(1., 0.);
-        glVertex3f(MODEL_SIZE, -MODEL_SIZE, MODEL_SIZE);
-        glTexCoord2f(1., 1.);
-        glVertex3f(MODEL_SIZE, MODEL_SIZE, MODEL_SIZE);
-    glEnd();
-
-    // back
-    glBegin(GL_QUADS);
-        glTexCoord2f(0., 1.);
-        glVertex3f(-MODEL_SIZE+0.1, MODEL_SIZE-0.1, -MODEL_SIZE+0.1);
-        glTexCoord2f(0., 0.);
-        glVertex3f(-MODEL_SIZE+0.1, MODEL_SIZE-0.1, MODEL_SIZE-0.1);
-        glTexCoord2f(1., 0.);
-        glVertex3f(-MODEL_SIZE+0.1, -MODEL_SIZE+0.1, MODEL_SIZE-0.1);
-        glTexCoord2f(1., 1.);
-        glVertex3f(MODEL_SIZE-0.1, MODEL_SIZE-0.1, -MODEL_SIZE+0.1);
-    glEnd();
-
-//    // top
-    glBegin(GL_QUADS);
-        glVertex3f(-MODEL_SIZE, MODEL_SIZE, -MODEL_SIZE);
-        glVertex3f(MODEL_SIZE, MODEL_SIZE, -MODEL_SIZE);
-        glVertex3f(MODEL_SIZE, MODEL_SIZE, MODEL_SIZE);
-        glVertex3f(-MODEL_SIZE, MODEL_SIZE, MODEL_SIZE);
-    glEnd();
-
-//    // bottom
-    glBegin(GL_QUADS);
-        glVertex3f(-MODEL_SIZE, -MODEL_SIZE, -MODEL_SIZE);
-        glVertex3f(MODEL_SIZE, -MODEL_SIZE, -MODEL_SIZE);
-        glVertex3f(MODEL_SIZE, -MODEL_SIZE, MODEL_SIZE);
-        glVertex3f(-MODEL_SIZE, -MODEL_SIZE, MODEL_SIZE);
-    glEnd();
-
-    // left
-    glBegin(GL_QUADS);
-        glVertex3f(-MODEL_SIZE, MODEL_SIZE, -MODEL_SIZE);
-        glVertex3f(-MODEL_SIZE, -MODEL_SIZE, -MODEL_SIZE);
-        glVertex3f(MODEL_SIZE, -MODEL_SIZE, -MODEL_SIZE);
-        glVertex3f(MODEL_SIZE, MODEL_SIZE, -MODEL_SIZE);
-    glEnd();
-
-    // right
-    glBegin(GL_QUADS);
-        glVertex3f(MODEL_SIZE, MODEL_SIZE, MODEL_SIZE);
-        glVertex3f(-MODEL_SIZE, MODEL_SIZE, MODEL_SIZE);
-        glVertex3f(-MODEL_SIZE, -MODEL_SIZE, MODEL_SIZE);
-        glVertex3f(MODEL_SIZE, -MODEL_SIZE, MODEL_SIZE);
-    glEnd();
-
-    glBindTexture(GL_TEXTURE_2D, 0);
-    glEnable(GL_DEPTH_TEST);
 }
 
 void ViewWidget::resizeGL(int w, int h)
@@ -535,12 +468,7 @@ void ViewWidget::paintGL()
     glLoadIdentity();
     std::vector<Planet> planets = this->model.getPlanets();
     float starSize = 10.;
-//    this->background();
     gluLookAt(1., 1., 1., 0., 0., 0., 0., 1., 0.);
-//    glPushMatrix();
-//    glLoadIdentity();
-//    this->background();
-//    glPopMatrix();
 
     if(this->cameraFocus > -1)
     {
@@ -548,13 +476,6 @@ void ViewWidget::paintGL()
         float planetX = (planets.at(this->cameraFocus).getDistanceFromSun() + starSize)*sin(planets.at(this->cameraFocus).getPosition());
         float planetZ = (planets.at(this->cameraFocus).getDistanceFromSun() + starSize)*cos(planets.at(this->cameraFocus).getPosition());
         glScalef(this->zoom, this->zoom, this->zoom);
-//        if(this->newFocus)
-//        {
-//            glRotatef(-this->rotationY, 0., 1., 0.);
-//            glRotatef(-this->rotationZ, 0., 0., 1.);
-//            glTranslatef(-this->movementX, -this->movementY, -this->movementZ);
-//            this->newFocus = false;
-//        }
         glTranslatef(-planetX, 0., -planetZ);
         this->movementX = 0.;
         this->movementZ = 0.;
@@ -567,31 +488,22 @@ void ViewWidget::paintGL()
         glRotatef(this->rotationY, 0., 1., 0.);
         glRotatef(this->rotationZ, 1., 0., 0.);
     }
-//    qDebug() << this->movementX << " " << this->movementZ;
-
-    GLfloat light_pos[] = {0., 0., 0., 1.};
-    this->lightPosition -= 0.01;
-    //glOrtho(-this->lightPosition, this->lightPosition, -this->lightPosition, this->lightPosition, -this->lightPosition, this->lightPosition);
-    if(this->lightPosition < 0.)
-    {
-        this->lightPosition = 5.;
-    }
-    glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
 
     this->model.tick(this->speed);
+
     GLfloat sun_ambient_and_diffuse[] = {248./255., 213./255., 104./255., 1.};
-//    GLfloat sun_ambient_and_diffuse[] = {1.0, 0.87, 0., 1.0};
+    GLfloat sun_specular[] = {0., 0., 0., 0.};
+    GLfloat sun_shininess = 0.;
     GLfloat sun_emission = 0.5;
     glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, sun_ambient_and_diffuse);
+    glMaterialfv(GL_FRONT, GL_SPECULAR, sun_specular);
+    glMaterialf(GL_FRONT, GL_SHININESS, sun_shininess);
     glMaterialf(GL_FRONT, GL_EMISSION, sun_emission);
 
-//    glActiveTexture(GL_TEXTURE0);
     glPushMatrix();
     glRotatef(this->model.getStarRotation(), 0., 1., 0.);
     glRotatef(90., 1., 0., 0.);
     glRotatef(180., 0., 0., 1.);
-//    glRotatef(90., 0., 0., 1.);
-
 
     if(this->questionMarc)
     {
@@ -602,6 +514,7 @@ void ViewWidget::paintGL()
        glBindTexture(GL_TEXTURE_2D, texUnits[SUN_TEX]);
     }
     glTexEnvi(GL_TEXTURE_ENV, GL_MODULATE, texUnits[SUN_TEX]);
+
     glBegin(GL_POLYGON);
         GLUquadric* sunQuadric = gluNewQuadric();
         gluQuadricOrientation(sunQuadric, GLU_OUTSIDE);
@@ -611,14 +524,13 @@ void ViewWidget::paintGL()
     glEnd();
     glBindTexture(GL_TEXTURE_2D, 0);
     glPopMatrix();
-    //    this->artificalSatillite(5.);
+
+    GLfloat light_pos[] = {0., 0., 0., 1.};
+    glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
 
     GLfloat planet_ambient_and_diffuse[] = {1., 1., 1., 1.0};
     GLfloat planet_emission = 0.;
     GLfloat planet_shininess = .5;
-
-//    glMaterialfv(GL_FRONT, GL_AMBIENT, planet_ambient_and_diffuse);
-//    glMaterialf(GL_FRONT, GL_EMISSION, planet_emission);
 
     for(unsigned int i = 0; i < planets.size(); i++)
     {
@@ -649,7 +561,7 @@ void ViewWidget::paintGL()
             glMaterialf(GL_FRONT, GL_SHININESS, planet_shininess);
             glPushMatrix();
             Satillite* currentSatillite = satillites->at(j);
-            float satilliteX = 0., satilliteY = 0., satilliteZ = 0.;
+            float satilliteX = 0., satilliteZ = 0.;
             satilliteX = (currentSatillite->getDistanceFromPlanet() + currentSatillite->getRadius()*2)*cos(currentSatillite->getPosition());
             satilliteZ = (currentSatillite->getDistanceFromPlanet() + currentSatillite->getRadius()*2)*sin(currentSatillite->getPosition());
             glTranslatef(satilliteX, 0., satilliteZ);
@@ -666,20 +578,30 @@ void ViewWidget::paintGL()
                     glMaterialf(GL_FRONT, GL_SHININESS, currentSatillite->getShininess());
                     glMaterialf(GL_FRONT, GL_EMISSION, currentSatillite->getEmissive());
                 }
-                glBindTexture(GL_TEXTURE_2D, texUnits[currentSatillite->getTextureUnitIndex()]);
+                if(currentSatillite->getTexturesSet())
+                {
+                    glBindTexture(GL_TEXTURE_2D, texUnits[currentSatillite->getTextureUnitIndex()]);
+                }
+                else
+                {
+                    glBindTexture(GL_TEXTURE_2D, 0);
+                }
                 glBegin(GL_POLYGON);
                     GLUquadric* moonQuadric = gluNewQuadric();
-//                    gluQuadricOrientation(moonQuadric, GLU_OUTSIDE);
                     gluQuadricTexture(moonQuadric, GL_TRUE);
                     gluSphere(moonQuadric, currentSatillite->getRadius(), 100, 100);
                     gluDeleteQuadric(moonQuadric);
                 glEnd();
                 glBindTexture(GL_TEXTURE_2D, 0);
+                glMaterialfv(GL_FRONT, GL_AMBIENT, nothing_ambient_and_diffuse);
+                glMaterialfv(GL_FRONT, GL_DIFFUSE, nothing_ambient_and_diffuse);
+                glMaterialfv(GL_FRONT, GL_SPECULAR, nothing_specular);
+                glMaterialf(GL_FRONT, GL_SHININESS, nothing_shininess);
+                glMaterialf(GL_FRONT, GL_EMISSION, nothing_emissive);
             }
             else
             {
                 this->artificalSatillite(currentSatillite->getRadius());
-//                this->artificalSatillite(0.7);
                 GLfloat reset_specular[] = {0., 0., 0., 0.};
                 glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, reset_specular);
             }

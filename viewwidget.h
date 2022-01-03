@@ -46,7 +46,6 @@ private:
     void satilliteArm(float size);
     void satilliteDish(double r, int lats, int longs);
     void satillitePanel(float size);
-    void background();
 
 public slots:
     void updateSpeed(int newSpeed);

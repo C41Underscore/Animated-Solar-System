@@ -17,6 +17,7 @@ private:
     float position;
     float verticalPosition;
     GLuint textureUnitIndex;
+    bool texturesSet;
     bool lightingSet;
     GLfloat* ambient;
     GLfloat* diffuse;
@@ -44,6 +45,7 @@ public:
     void setDistanceFromPlanet(float distance);
     void setLighting(GLfloat ambient[], GLfloat diffuse[], GLfloat specular[], GLfloat shininess, GLfloat emissive);
     void setTextureUnitIndex(GLuint index);
+    bool getTexturesSet() const;
 };
 
 #endif // SATILLITE_H
