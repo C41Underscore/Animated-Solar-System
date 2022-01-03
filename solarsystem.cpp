@@ -7,10 +7,12 @@ SolarSystem::SolarSystem()
 
 }
 
-SolarSystem::SolarSystem(std::string starName, float starRadius)
+SolarSystem::SolarSystem(std::string starName, float starRadius, float starRotationSpeed)
 {
-    this->star = new Planet(starName, 0., starRadius, 0.);
+    this->star = new Planet(starName, 0., starRadius, 0., starRotationSpeed);
     this->planets = std::vector<Planet>();
+    this->starRotation = 0.;
+    this->starRotationSpeed = 360./starRotationSpeed;
 }
 
 void SolarSystem::addPlanet(Planet newPlanet)
@@ -26,6 +28,11 @@ std::vector<Planet> SolarSystem::getPlanets()
 
 void SolarSystem::tick(float speed)
 {
+    this->starRotation += speed*starRotationSpeed;
+    if(this->starRotation > 360.)
+    {
+        this->starRotation -= 360.;
+    }
     for(unsigned int i = 0; i < this->planets.size(); i++)
     {
         this->planets.at(i).updatePosition(speed);
@@ -100,6 +107,16 @@ void SolarSystem::normalise(float scalar, std::string specifiedPlanet)
 Planet SolarSystem::getStar()
 {
     return *this->star;
+}
+
+float SolarSystem::getStarRotation() const
+{
+    return starRotation;
+}
+
+void SolarSystem::setStarRotation(float newStarRotation)
+{
+    starRotation = newStarRotation;
 }
 
 SolarSystem::~SolarSystem()

@@ -1,13 +1,35 @@
 #include "planet.h"
 
-Planet::Planet(std::string name, float orbitPeriod, float radius, float distanceFromSun)
+void Planet::setRotationSpeed(float newRotationSpeed)
+{
+    this->rotationSpeed = newRotationSpeed;
+}
+
+float Planet::getRotationSpeed() const
+{
+    return this->rotationSpeed;
+}
+
+float Planet::getRotation() const
+{
+    return rotation;
+}
+
+void Planet::setRotation(float newRotation)
+{
+    rotation = newRotation;
+}
+
+Planet::Planet(std::string name, float orbitPeriod, float radius, float distanceFromSun, float rotationPeriod)
 {
     this->name = name;
     this->orbitPeriod = orbitPeriod;
     this->radius = radius;
     this->distanceFromSun = distanceFromSun;
     this->orbitSpeed = 360./this->orbitPeriod;
+    this->rotationSpeed = 360./rotationPeriod;
     this->position = 0;
+    this->rotation = 0.;
     this->satillites = std::vector<Satillite*>();
 }
 
@@ -17,6 +39,12 @@ void Planet::updatePosition(float speed)
     if(this->position > 360.)
     {
         this->position -= 360.;
+    }
+    this->rotation += speed*this->rotationSpeed;
+//    qDebug() << this->rotation;
+    if(this->rotation > 360.)
+    {
+        this->rotation -= 360.;
     }
     this->updateSatillitePositions(speed);
 }

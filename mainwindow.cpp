@@ -11,18 +11,24 @@ MainWindow::MainWindow(QWidget *parent)
     speedControl->setMaximum(100);
     speedControl->setMinimum(0);
     speedControl->setSingleStep(1);
-    speedControl->setSliderPosition(1);
+    speedControl->setSliderPosition(5);
     connect(speedControl, SIGNAL(valueChanged(int)), viewPort, SLOT(updateSpeed(int)));
 
     focusControl = new QComboBox();
     focusControl->addItems({"The Sun", "Mercury", "Venus", "Earth", "Mars", "Jupiter", "Saturn", "Uranus", "Neptune"});
     focusControl->setCurrentIndex(0);
     focusControl->view()->installEventFilter(new Filter());
-    connect(focusControl, SIGNAL(currentTextChanged(const QString&)), viewPort, SLOT(updateView(const QString&)));
+    connect(focusControl, SIGNAL(currentTextChanged(QString)), viewPort, SLOT(updateView(QString)));
 
+    resetButton = new QPushButton("Reset Position", this);
+    connect(resetButton, SIGNAL(clicked()), viewPort, SLOT(resetPosition()));
+
+    marcControl = new QCheckBox("Marc?", this);
+    connect(marcControl, SIGNAL(stateChanged(int)), viewPort, SLOT(bigMarcTime(int)));
 
     layout->addWidget(viewPort);
     layout->addWidget(speedControl);
+    layout->addWidget(marcControl);
     layout->addWidget(focusControl);
 }
 
@@ -30,6 +36,7 @@ MainWindow::~MainWindow()
 {
     delete viewPort;
     delete speedControl;
+    delete marcControl;
     delete layout;
 }
 

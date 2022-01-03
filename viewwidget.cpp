@@ -42,14 +42,14 @@ GLfloat pale_body_emissive = 0.;
 
 ViewWidget::ViewWidget(QWidget* parent) : QGLWidget(parent)
 {
-    this->model = SolarSystem("Sol", 696340.);
-    Planet mercury("Mercury", 88., 2439.7, 57910000.);
+    this->model = SolarSystem("Sol", 696340., 27.);
+    Planet mercury("Mercury", 88., 2439.7, 57910000., (58. + 15./24. + 0.5/24.));
     mercury.setTextureUnitIndex(MERCURY_TEX);
     this->model.addPlanet(mercury);
-    Planet venus("Venus", 225., 6051.8, 108200000.);
+    Planet venus("Venus", 225., 6051.8, 108200000., (243.0226));
     venus.setTextureUnitIndex(VENUS_TEX);
     this->model.addPlanet(venus);
-    Planet earth("Earth", 365., 6371., 149600000.);
+    Planet earth("Earth", 365., 6371., 149600000., 1.);
     earth.setTextureUnitIndex(EARTH_TEX);
     Satillite* theMoon = new Satillite(27., 1737.4, 384400., true);
 //    theMoon->setLighting(silver_body_ambient_and_diffuse,
@@ -61,13 +61,13 @@ ViewWidget::ViewWidget(QWidget* parent) : QGLWidget(parent)
     earth.addSatillite(theMoon); // The Moon
     earth.addSatillite(new Satillite(50., 500., 599999999., false)); // The Hubble, let's say
     this->model.addPlanet(earth);
-    Planet mars("Mars", 687., 3389.5, 227900000.);
+    Planet mars("Mars", 687., 3389.5, 227900000., 1. + 1./24.);
     mars.setTextureUnitIndex(MARS_TEX);
     mars.addSatillite(new Satillite(8./24., 11.267, 9376., true)); // Phobos
     mars.addSatillite(new Satillite(1.263, 6.2, 23458., true)); // Diemos
     mars.addSatillite(new Satillite(60., 400., 599999999., false));
     this->model.addPlanet(mars);
-    Planet jupiter("Jupiter", (float)12*365, 69911., 778000000.);
+    Planet jupiter("Jupiter", (float)12*365, 69911., 778000000., (9./24. + (56./60.)/24.));
     jupiter.setTextureUnitIndex(JUPITER_TEX);
     Satillite* europa = new Satillite(85./24., 1560.8, 671100.,  true);
     europa->setLighting(pale_body_ambient_and_diffuse,
@@ -86,7 +86,7 @@ ViewWidget::ViewWidget(QWidget* parent) : QGLWidget(parent)
     jupiter.addSatillite(io); // Io
     jupiter.addSatillite(new Satillite(17., 2410.3, 1882700., true)); // Callisto
     this->model.addPlanet(jupiter);
-    Planet saturn("Saturn", (float)29*365, 58232., 1434000000.);
+    Planet saturn("Saturn", (float)29*365, 58232., 1434000000., (10./24. + (42./60.)/24.));
     saturn.setTextureUnitIndex(SATURN_TEX);
     Satillite* titan = new Satillite(16., 2574.7, 149598262., true);
     titan->setLighting(yellow_body_ambient_and_diffuse,
@@ -96,16 +96,16 @@ ViewWidget::ViewWidget(QWidget* parent) : QGLWidget(parent)
                        yellow_body_emissive);
     saturn.addSatillite(titan); // Titan
     this->model.addPlanet(saturn);
-    Planet uranus("Uranus", (float)84*365, 25362., 2871000000.);
+    Planet uranus("Uranus", (float)84*365, 25362., 2871000000., (17. + (14./60.)/24.));
     uranus.setTextureUnitIndex(URANUS_TEX);
     uranus.addSatillite(new Satillite(209./24., 788.4, 436300., true)); // Titania
     this->model.addPlanet(uranus);
-    Planet neptune("Neptune", (float)165*365, 24622., 4495000000.);
+    Planet neptune("Neptune", (float)165*365, 24622., 4495000000., (16./24. + (6./60.)/24.));
     neptune.setTextureUnitIndex(NEPTUNE_TEX);
     neptune.addSatillite(new Satillite(141./24., 1353.4, 345759., true)); // Triton
     neptune.addSatillite(new Satillite(50., 550., 599999999., false));
     this->model.addPlanet(neptune);
-    this->model.normalise(MODEL_SIZE);
+    this->model.normalise(MODEL_SIZE*2);
     this->speed = 0.0005;
     this->lightPosition = 5.;
     this->zoom = 1.;
@@ -116,6 +116,7 @@ ViewWidget::ViewWidget(QWidget* parent) : QGLWidget(parent)
     this->movementZ = 0.;
     this->rotationY = 0.;
     this->rotationZ = 0.;
+    this->questionMarc = false;
 }
 
 void ViewWidget::moveCamera(bool up, bool down, bool forwards, bool backwards, bool left, bool right)
@@ -161,11 +162,11 @@ void ViewWidget::rotateCamera(bool up, bool down, bool left, bool right)
         float rotate = 0.5;
         if(up)
         {
-            this->rotationZ -= rotate;
+            this->rotationZ += rotate;
         }
         if(down)
         {
-            this->rotationZ += rotate;
+            this->rotationZ -= rotate;
         }
         if(left)
         {
@@ -206,7 +207,7 @@ void ViewWidget::updateView(const QString& objectName)
 
 void ViewWidget::updateZoom(bool trueForUp)
 {
-    float zoom = 0.5;
+    float zoom = 0.25;
     if(trueForUp)
     {
         this->zoom += zoom;
@@ -222,18 +223,30 @@ void ViewWidget::updateZoom(bool trueForUp)
     update();
 }
 
+void ViewWidget::bigMarcTime(int state)
+{
+    this->questionMarc = state == 2 ? true : false;
+    update();
+}
+
+void ViewWidget::resetPosition()
+{
+    this->movementX = 0.;
+    this->movementY = 0.;
+    this->movementZ = 0.;
+    this->rotationY = 0.;
+    this->rotationZ = 0.;
+//    this->movementX -= this->movementX;
+//    this->movementY -= this->movementY;
+//    this->movementZ -= this->movementZ;
+//    this->rotationY -= this->rotationY;
+//    this->rotationZ -= this->rotationZ;
+    this->zoom = 1.;
+}
+
 void ViewWidget::initializeGL()
 {
     glClearColor(0., 0., 0., 0.);
-    glEnable(GL_LIGHTING);
-    glEnable(GL_LIGHT0);
-    glMatrixMode(GL_PROJECTION);
-    float betterModelSize = MODEL_SIZE + MODEL_SIZE/4.;
-    glOrtho(-betterModelSize, betterModelSize, -betterModelSize, betterModelSize, -betterModelSize, betterModelSize);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    glEnable(GL_NORMALIZE);
-
     // big texture time
     glEnable(GL_TEXTURE_2D);
 //    glEnable(GL_COLOR_MATERIAL);
@@ -260,6 +273,7 @@ void ViewWidget::initializeGL()
     {
         glGenTextures(1, &texUnits[textures.at(i).second]);
         glBindTexture(GL_TEXTURE_2D, texUnits[textures.at(i).second]);
+        glPixelStorei(GL_UNPACK_ALIGNMENT, texUnits[textures.at(i).second]);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -267,18 +281,35 @@ void ViewWidget::initializeGL()
         idata = stbi_load(textures.at(i).first.c_str(), &w, &h, &nChannels, 0);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, idata);
         stbi_image_free(idata);
-        qDebug() << textures.at(i).second;
-    }
-
-    for(int i = 0; i < 16; i++)
-    {
-        qDebug() << texUnits[i];
     }
 
     glBindTexture(GL_TEXTURE_2D, 0);
 
-
     // big texture time
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    float betterModelSize = MODEL_SIZE;// + MODEL_SIZE/4.;
+    glOrtho(-betterModelSize, betterModelSize, -betterModelSize, betterModelSize, -betterModelSize, betterModelSize);
+
+//    glMatrixMode(GL_MODELVIEW);
+//    glLoadIdentity();
+
+////    glDepthMask(GL_FALSE);
+//    glBindTexture(GL_TEXTURE_2D, texUnits[BACKGROUND_TEX]);
+//    glBegin(GL_QUADS);
+//        glTexCoord2f(0., 1.); glVertex2f(-1., 1.);
+//        glTexCoord2f(1., 1.); glVertex2f(1., 1.);
+//        glTexCoord2f(1., 0.); glVertex2f(1., -1.);
+//        glTexCoord2f(0., 0.); glVertex2f(-1., -1.);
+//    glEnd();
+//    glBindTexture(GL_TEXTURE_2D, 0);
+////    glDepthMask(GL_TRUE);
+
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    glEnable(GL_NORMALIZE);
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
 
     QTimer* timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(update()));
@@ -427,6 +458,70 @@ void ViewWidget::artificalSatillite(float size)
 //    glPopMatrix();
 }
 
+void ViewWidget::background()
+{
+    glDisable(GL_DEPTH_TEST);
+    glBindTexture(GL_TEXTURE_2D, texUnits[BACKGROUND_TEX]);
+    // front
+    glBegin(GL_QUADS);
+        glTexCoord2f(0., 1.);
+        glVertex3f(MODEL_SIZE, MODEL_SIZE, -MODEL_SIZE);
+        glTexCoord2f(0., 0.);
+        glVertex3f(MODEL_SIZE, -MODEL_SIZE, -MODEL_SIZE);
+        glTexCoord2f(1., 0.);
+        glVertex3f(MODEL_SIZE, -MODEL_SIZE, MODEL_SIZE);
+        glTexCoord2f(1., 1.);
+        glVertex3f(MODEL_SIZE, MODEL_SIZE, MODEL_SIZE);
+    glEnd();
+
+    // back
+    glBegin(GL_QUADS);
+        glTexCoord2f(0., 1.);
+        glVertex3f(-MODEL_SIZE+0.1, MODEL_SIZE-0.1, -MODEL_SIZE+0.1);
+        glTexCoord2f(0., 0.);
+        glVertex3f(-MODEL_SIZE+0.1, MODEL_SIZE-0.1, MODEL_SIZE-0.1);
+        glTexCoord2f(1., 0.);
+        glVertex3f(-MODEL_SIZE+0.1, -MODEL_SIZE+0.1, MODEL_SIZE-0.1);
+        glTexCoord2f(1., 1.);
+        glVertex3f(MODEL_SIZE-0.1, MODEL_SIZE-0.1, -MODEL_SIZE+0.1);
+    glEnd();
+
+//    // top
+    glBegin(GL_QUADS);
+        glVertex3f(-MODEL_SIZE, MODEL_SIZE, -MODEL_SIZE);
+        glVertex3f(MODEL_SIZE, MODEL_SIZE, -MODEL_SIZE);
+        glVertex3f(MODEL_SIZE, MODEL_SIZE, MODEL_SIZE);
+        glVertex3f(-MODEL_SIZE, MODEL_SIZE, MODEL_SIZE);
+    glEnd();
+
+//    // bottom
+    glBegin(GL_QUADS);
+        glVertex3f(-MODEL_SIZE, -MODEL_SIZE, -MODEL_SIZE);
+        glVertex3f(MODEL_SIZE, -MODEL_SIZE, -MODEL_SIZE);
+        glVertex3f(MODEL_SIZE, -MODEL_SIZE, MODEL_SIZE);
+        glVertex3f(-MODEL_SIZE, -MODEL_SIZE, MODEL_SIZE);
+    glEnd();
+
+    // left
+    glBegin(GL_QUADS);
+        glVertex3f(-MODEL_SIZE, MODEL_SIZE, -MODEL_SIZE);
+        glVertex3f(-MODEL_SIZE, -MODEL_SIZE, -MODEL_SIZE);
+        glVertex3f(MODEL_SIZE, -MODEL_SIZE, -MODEL_SIZE);
+        glVertex3f(MODEL_SIZE, MODEL_SIZE, -MODEL_SIZE);
+    glEnd();
+
+    // right
+    glBegin(GL_QUADS);
+        glVertex3f(MODEL_SIZE, MODEL_SIZE, MODEL_SIZE);
+        glVertex3f(-MODEL_SIZE, MODEL_SIZE, MODEL_SIZE);
+        glVertex3f(-MODEL_SIZE, -MODEL_SIZE, MODEL_SIZE);
+        glVertex3f(MODEL_SIZE, -MODEL_SIZE, MODEL_SIZE);
+    glEnd();
+
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glEnable(GL_DEPTH_TEST);
+}
+
 void ViewWidget::resizeGL(int w, int h)
 {
     glViewport(0, 0, w, h);
@@ -434,15 +529,18 @@ void ViewWidget::resizeGL(int w, int h)
 
 void ViewWidget::paintGL()
 {
-//    glMatrixMode(GL_PROJECTION);
-//    glOrtho(-MODEL_SIZE, MODEL_SIZE, -MODEL_SIZE, MODEL_SIZE, -MODEL_SIZE, MODEL_SIZE);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glMatrixMode(GL_MODELVIEW);
     glEnable(GL_DEPTH_TEST);
     glLoadIdentity();
     std::vector<Planet> planets = this->model.getPlanets();
     float starSize = 10.;
+//    this->background();
     gluLookAt(1., 1., 1., 0., 0., 0., 0., 1., 0.);
+//    glPushMatrix();
+//    glLoadIdentity();
+//    this->background();
+//    glPopMatrix();
 
     if(this->cameraFocus > -1)
     {
@@ -450,13 +548,13 @@ void ViewWidget::paintGL()
         float planetX = (planets.at(this->cameraFocus).getDistanceFromSun() + starSize)*sin(planets.at(this->cameraFocus).getPosition());
         float planetZ = (planets.at(this->cameraFocus).getDistanceFromSun() + starSize)*cos(planets.at(this->cameraFocus).getPosition());
         glScalef(this->zoom, this->zoom, this->zoom);
-        if(this->newFocus)
-        {
-            glRotatef(-this->rotationY, 0., 1., 0.);
-            glRotatef(-this->rotationZ, 0., 0., 1.);
-            glTranslatef(-this->movementX, -this->movementY, -this->movementZ);
-            this->newFocus = false;
-        }
+//        if(this->newFocus)
+//        {
+//            glRotatef(-this->rotationY, 0., 1., 0.);
+//            glRotatef(-this->rotationZ, 0., 0., 1.);
+//            glTranslatef(-this->movementX, -this->movementY, -this->movementZ);
+//            this->newFocus = false;
+//        }
         glTranslatef(-planetX, 0., -planetZ);
         this->movementX = 0.;
         this->movementZ = 0.;
@@ -468,7 +566,6 @@ void ViewWidget::paintGL()
         glTranslatef(this->movementX, this->movementY, this->movementZ);
         glRotatef(this->rotationY, 0., 1., 0.);
         glRotatef(this->rotationZ, 1., 0., 0.);
-
     }
 //    qDebug() << this->movementX << " " << this->movementZ;
 
@@ -490,12 +587,20 @@ void ViewWidget::paintGL()
 
 //    glActiveTexture(GL_TEXTURE0);
     glPushMatrix();
+    glRotatef(this->model.getStarRotation(), 0., 1., 0.);
     glRotatef(90., 1., 0., 0.);
     glRotatef(180., 0., 0., 1.);
 //    glRotatef(90., 0., 0., 1.);
 
 
-    glBindTexture(GL_TEXTURE_2D, texUnits[SUN_TEX]);
+    if(this->questionMarc)
+    {
+        glBindTexture(GL_TEXTURE_2D, texUnits[MARC_DEKAMPS_TEX]);
+    }
+    else
+    {
+       glBindTexture(GL_TEXTURE_2D, texUnits[SUN_TEX]);
+    }
     glTexEnvi(GL_TEXTURE_ENV, GL_MODULATE, texUnits[SUN_TEX]);
     glBegin(GL_POLYGON);
         GLUquadric* sunQuadric = gluNewQuadric();
@@ -521,11 +626,11 @@ void ViewWidget::paintGL()
         float planetX = (planets.at(i).getDistanceFromSun() + starSize)*sin(planets.at(i).getPosition());
         float planetZ = (planets.at(i).getDistanceFromSun() + starSize)*cos(planets.at(i).getPosition());
         glTranslatef(planetX, 0., planetZ);
+        glRotatef(planets.at(i).getRotation(), 0, 1., 0.);
         glRotatef(90., 1., 0., 0.);
         glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, planet_ambient_and_diffuse);
         glMaterialf(GL_FRONT, GL_EMISSION, planet_emission);
         glMaterialf(GL_FRONT, GL_SHININESS, planet_shininess);
-        qDebug() << planets.at(i).getTextureUnitIndex();
         glBindTexture(GL_TEXTURE_2D, texUnits[planets.at(i).getTextureUnitIndex()]);
         glBegin(GL_POLYGON);
             GLUquadric* planetQuadric = gluNewQuadric();

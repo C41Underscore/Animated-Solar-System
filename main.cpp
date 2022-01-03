@@ -5,9 +5,9 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
-// TODO - Add textures
-// TODO - Add a spaceship, which flies across the screen when a button is pushed, this can also our convex model with normals.
-// TODO - Add a stary background
+// TODO - get the rest of the remaining textures
+// TODO - Add rings to saturn I reckon
+// TODO - Add a stary background (BIG MAYBE)
 // TODO - Space items out a bit better, so it looks a bit nicer
 
 int main(int argc, char *argv[])

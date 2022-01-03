@@ -6,6 +6,9 @@
 #include <QSlider>
 #include <QComboBox>
 #include <QKeyEvent>
+#include <QPushButton>
+#include <QLabel>
+#include <QCheckBox>
 #include <QAbstractItemView>
 
 #include "viewwidget.h"
@@ -37,6 +40,9 @@ private:
     ViewWidget* viewPort;
     QSlider* speedControl;
     QComboBox* focusControl;
+    QLabel* resetLabel;
+    QPushButton* resetButton;
+    QCheckBox* marcControl;
     QBoxLayout* layout;
 };
 #endif // MAINWINDOW_H
