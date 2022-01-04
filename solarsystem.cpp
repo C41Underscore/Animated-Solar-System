@@ -4,9 +4,9 @@
 
 SolarSystem::SolarSystem() {}
 
-SolarSystem::SolarSystem(std::string starName, float starRadius, float starRotationSpeed)
+SolarSystem::SolarSystem(std::string starName, float starRotationSpeed)
 {
-    this->star = new Planet(starName, 0., starRadius, 0., starRotationSpeed, false);
+    this->star = new Planet(starName, 0., 0., 0., starRotationSpeed);
     this->planets = std::vector<Planet>();
     this->starRotation = 0.;
     this->starRotationSpeed = 360./starRotationSpeed;
@@ -83,9 +83,7 @@ void SolarSystem::normalise(float scalar, std::string specifiedPlanet)
         std::vector<Satillite*>* satillites = this->planets.at(i).getSatillites();
         for(unsigned int j = 0; j < satillites->size(); j++)
         {
-//            float newSatilliteDistance = satillites->at(j).getDistanceFromPlanet()/this->planets.at(i).getDistanceFromSun();
             float newSatilliteDistance = satillites->at(j)->getDistanceFromPlanet()/highest_distance;
-//            float newSatilliteRadius = satillites->at(j).getRadius()/this->planets.at(i).getRadius();
             float newSatilliteRadius = satillites->at(j)->getRadius()/highest_radius;
             satillites->at(j)->setDistanceFromPlanet(newSatilliteDistance);
             satillites->at(j)->setRadius(newSatilliteRadius);

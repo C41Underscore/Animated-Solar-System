@@ -20,28 +20,7 @@ void Planet::setRotation(float newRotation)
     rotation = newRotation;
 }
 
-bool Planet::getHasRings() const
-{
-    return hasRings;
-}
-
-void Planet::setHasRings(bool newHasRings)
-{
-    hasRings = newHasRings;
-}
-
-QPair<float, float> Planet::getRings() const
-{
-    return rings;
-}
-
-void Planet::setRingSize(float inner, float outer)
-{
-    this->rings.first = inner;
-    this->rings.second = outer;
-}
-
-Planet::Planet(std::string name, float orbitPeriod, float radius, float distanceFromSun, float rotationPeriod, bool hasRings)
+Planet::Planet(std::string name, float orbitPeriod, float radius, float distanceFromSun, float rotationPeriod)
 {
     this->name = name;
     this->orbitPeriod = orbitPeriod;
@@ -52,7 +31,6 @@ Planet::Planet(std::string name, float orbitPeriod, float radius, float distance
     this->position = 0;
     this->rotation = 0.;
     this->satillites = std::vector<Satillite*>();
-    this->hasRings = hasRings;
 }
 
 void Planet::updatePosition(float speed)
@@ -63,7 +41,6 @@ void Planet::updatePosition(float speed)
         this->position -= 360.;
     }
     this->rotation += speed*this->rotationSpeed;
-//    qDebug() << this->rotation;
     if(this->rotation > 360.)
     {
         this->rotation -= 360.;

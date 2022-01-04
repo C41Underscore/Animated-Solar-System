@@ -3,7 +3,6 @@
 
 #include <vector>
 #include <string>
-#include <QPair>
 #include <QDebug>
 
 #include "satillite.h"
@@ -19,13 +18,11 @@ private:
     float rotationSpeed;
     float position;
     float rotation;
-    bool hasRings;
-    QPair<float, float> rings;
     GLuint textureUnitIndex;
     std::vector<Satillite*> satillites;
 
 public:
-    Planet(std::string name, float orbitPeriod, float radius, float distanceFromSun, float rotationPeriod, bool hasRings);
+    Planet(std::string name, float orbitPeriod, float radius, float distanceFromSun, float rotationPeriod);
     std::string getName();
     float getOrbitPeriod();
     float getRadius();
@@ -44,10 +41,6 @@ public:
     float getRotationSpeed() const;
     float getRotation() const;
     void setRotation(float newRotation);
-    bool getHasRings() const;
-    void setHasRings(bool newHasRings);
-    void setRingSize(float inner, float outer);
-    QPair<float, float> getRings() const;
 };
 
 #endif // PLANET_H

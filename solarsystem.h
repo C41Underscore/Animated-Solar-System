@@ -5,13 +5,11 @@
 #include <string>
 #include "planet.h"
 
-#define EARTH_DEGREE_MOVEMENT_PER_DAY (360/365)
-
 class SolarSystem
 {
 public:
     SolarSystem();
-    SolarSystem(std::string starName, float starRadius, float starRotationSpeed);
+    SolarSystem(std::string starName, float starRotationSpeed);
     ~SolarSystem();
     void addPlanet(Planet newPlanet);
     void tick(float speed); // an Earth day

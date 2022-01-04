@@ -10,23 +10,8 @@
 #include <QPushButton>
 #include <QLabel>
 #include <QCheckBox>
-#include <QAbstractItemView>
 
 #include "viewwidget.h"
-
-class Filter: public QObject
-{
-    Q_OBJECT
-public:
-    bool eventFilter(QObject* object, QEvent* event)
-    {
-        if(event->type() == QEvent::KeyPress)
-        {
-            return true;
-        }
-        return false;
-    }
-};
 
 class MainWindow : public QWidget
 {

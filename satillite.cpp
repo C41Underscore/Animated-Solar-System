@@ -13,14 +13,6 @@ Satillite::Satillite(float orbitPeriod, float radius, float distanceFromPlanet, 
     this->lightingSet = false;
     this->texturesSet = false;
     this->textureUnitIndex = 0.;
-    if(!isMoon)
-    {
-        this->verticalPosition = 0.;
-    }
-    else
-    {
-        this->verticalPosition = -1.;
-    }
 }
 
 bool Satillite::getTexturesSet() const
@@ -35,15 +27,6 @@ void Satillite::updatePosition(float speed)
     {
         this->position -= 360.;
     }
-    if(!this->isMoon())
-    {
-        this->verticalPosition += speed*this->orbitSpeed;
-//        qDebug() << this->verticalPosition;
-        if(this->verticalPosition > 360.)
-        {
-            this->verticalPosition -= 360.;
-        }
-    }
 }
 
 float Satillite::getDistanceFromPlanet()
@@ -54,11 +37,6 @@ float Satillite::getDistanceFromPlanet()
 float Satillite::getPosition()
 {
     return this->position;
-}
-
-float Satillite::getVerticalPosition()
-{
-    return this->verticalPosition;
 }
 
 float Satillite::getRadius()

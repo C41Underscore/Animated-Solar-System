@@ -32,7 +32,6 @@ MainWindow::MainWindow(QWidget *parent)
     focusControl = new QComboBox();
     focusControl->addItems({"The Sun", "Mercury", "Venus", "Earth", "Mars", "Jupiter", "Saturn", "Uranus", "Neptune"});
     focusControl->setCurrentIndex(0);
-    focusControl->view()->installEventFilter(new Filter());
     connect(focusControl, SIGNAL(currentTextChanged(QString)), viewPort, SLOT(updateView(QString)));
 
     focusLayout = new QHBoxLayout(this);
@@ -46,13 +45,7 @@ MainWindow::MainWindow(QWidget *parent)
     layout->addLayout(focusLayout);
 }
 
-MainWindow::~MainWindow()
-{
-    delete viewPort;
-    delete speedControl;
-    delete marcControl;
-    delete layout;
-}
+MainWindow::~MainWindow(){}
 
 void MainWindow::keyPressEvent(QKeyEvent *event)
 {

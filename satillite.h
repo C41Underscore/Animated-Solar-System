@@ -15,7 +15,6 @@ private:
     float distanceFromPlanet;
     float orbitSpeed;
     float position;
-    float verticalPosition;
     GLuint textureUnitIndex;
     bool texturesSet;
     bool lightingSet;
@@ -32,7 +31,6 @@ public:
     float getRadius();
     float getOrbitSpeed();
     float getPosition();
-    float getVerticalPosition();
     GLfloat* getAmbient();
     GLfloat* getDiffuse();
     GLfloat* getSpecular();
